@@ -9,7 +9,7 @@ import java.util.Random;
 import pac.man.ctrl.CollisionHandler;
 import pac.man.ctrl.StickyCollisions;
 import pac.man.util.Animation;
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -196,24 +196,24 @@ public class Level {
         }
     }
 
-    public Vector randomPlayerSpawn() {
+    public MathVector randomPlayerSpawn() {
         int s = playerSpawns.size();
         Rect r;
 
         if(s != 0) r = playerSpawns.get(random.nextInt(s));
-        else       return new Vector(0, 0);
+        else       return new MathVector(0, 0);
 
-        return new Vector(r.left, r.top);
+        return new MathVector(r.left, r.top);
     }
 
-    public Vector randomEnemySpawn() {
+    public MathVector randomEnemySpawn() {
         int s = enemySpawns.size();
         Rect r;
 
         if(s != 0) r = enemySpawns.get(random.nextInt(s));
-        else       return new Vector(0, 0);
+        else       return new MathVector(0, 0);
 
-        return new Vector(r.left, r.top);
+        return new MathVector(r.left, r.top);
     }
 
     public CollisionHandler getCollisionHandler() {

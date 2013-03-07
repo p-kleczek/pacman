@@ -26,12 +26,12 @@ import pac.man.ctrl.MovementAlgorithm;
 import pac.man.ctrl.MovementAlgorithm.Speed;
 import pac.man.model.GameState;
 import pac.man.model.Player;
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 
 public class PacMan extends Activity implements SensorEventListener {
 
     private static PacMan instance; 
-    private GamePanel gamePanel = null;
+    private GamePanel gamePanel;
 
     // Accelerometer
     private float mLastX, mLastY;
@@ -39,7 +39,7 @@ public class PacMan extends Activity implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     
-    public static Speed pSpeed = null;
+    public static Speed pSpeed;
     public static int pNOps = -1;
 
     private void getPrefs() {
@@ -56,12 +56,12 @@ public class PacMan extends Activity implements SensorEventListener {
         
         pNOps = Integer.parseInt(nOpponentsPreference);
 
-        if (gamePanel != null && gamePanel.player != null) {
-            Player p = gamePanel.player;
-            Vector speed = new Vector(p.getSpeed().normalize().scale(MovementAlgorithm.getSpeed().getGain()));
+        if (gamePanel != null && gamePanel.getPlayer() != null) {
+            Player p = gamePanel.getPlayer();
+            MathVector speed = new MathVector(p.getSpeed().normalize().scale(MovementAlgorithm.getSpeed().getGain()));
             p.setSpeed(speed);
 
-            GameState g = gamePanel.gameState;
+            GameState g = gamePanel.getGameState();
             boolean restart = pNOps != g.getNumOpponents(); 
             g.setNumOpponents(Integer.parseInt(nOpponentsPreference));
             if (restart)

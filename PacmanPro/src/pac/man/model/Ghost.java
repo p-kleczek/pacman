@@ -6,7 +6,7 @@ import android.graphics.Point;
 import android.graphics.Canvas;
 
 import pac.man.util.Animation;
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 import pac.man.model.Character.AnimationType;
 import pac.man.ctrl.MovementStrategy;
 import pac.man.ctrl.RandomStrategy;
@@ -16,8 +16,8 @@ public class Ghost extends Character {
     private MovementStrategy movementStrategy;
     boolean special = false;
 
-    public Ghost(Vector position, Map<AnimationType, Animation> animations) {
-        super(new Vector(animations.values().iterator().next().getWidth(),
+    public Ghost(MathVector position, Map<AnimationType, Animation> animations) {
+        super(new MathVector(animations.values().iterator().next().getWidth(),
                         animations.values().iterator().next().getHeight()),
               position, animations);
 
@@ -37,8 +37,8 @@ public class Ghost extends Character {
 
     public void handleMove() {
         // Do dat AI, boiiii!
-        Vector dir = movementStrategy.computeDirection(getPosition(), getSpeed());
-        Vector spd = movementAlgorithm.computeSpeed(getPosition(), getSpeed(), dir);
+        MathVector dir = movementStrategy.computeDirection(getPosition(), getSpeed());
+        MathVector spd = movementAlgorithm.computeSpeed(getPosition(), getSpeed(), dir);
 
         setSpeed(spd);
     }

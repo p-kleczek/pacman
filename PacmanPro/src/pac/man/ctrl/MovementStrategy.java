@@ -1,7 +1,7 @@
 package pac.man.ctrl;
 
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 
 public abstract class MovementStrategy {
-    public abstract Vector computeDirection(Vector position, Vector currentSpeed);
+    public abstract MathVector computeDirection(MathVector position, MathVector currentSpeed);
 }

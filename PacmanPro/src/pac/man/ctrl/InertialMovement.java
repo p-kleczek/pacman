@@ -1,17 +1,17 @@
 package pac.man.ctrl;
 
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 
 public class InertialMovement extends MovementAlgorithm {
-    private Vector speed;
+    private MathVector speed;
     private double inertia;
 
-    public InertialMovement(Vector speed, double inertia) {
-        this.speed = new Vector(speed.x, speed.y);
+    public InertialMovement(MathVector speed, double inertia) {
+        this.speed = new MathVector(speed.x, speed.y);
         this.inertia = inertia;
     }
 
-    public Vector computeSpeed(Vector position, Vector currentSpeed, Vector preferredDir) {
+    public MathVector computeSpeed(MathVector position, MathVector currentSpeed, MathVector preferredDir) {
         speed.add(preferredDir.scale(inertia));
         speed.normalize();
         return speed.scale(MovementAlgorithm.getSpeed().getGain());

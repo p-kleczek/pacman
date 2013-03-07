@@ -23,7 +23,7 @@ import pac.man.model.Level;
 import pac.man.model.Level.CollisionCallback;
 import pac.man.model.Character;
 import pac.man.util.Animation;
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 
 public class GameState {
     public static final int STARTING_LIVES = 3;
@@ -62,7 +62,7 @@ public class GameState {
         this.ghosts = new Ghost[size];
 
         for(int i = 0; i < size; ++i) {
-            this.ghosts[i] = new Ghost(new Vector(-100, 0), ghosts.get(i));
+            this.ghosts[i] = new Ghost(new MathVector(-100, 0), ghosts.get(i));
         }
 
         this.resMgr = resMgr;
@@ -86,7 +86,7 @@ public class GameState {
             if(Rect.intersects(p, g)) {
                 if(special) {
                     ghosts[i].setAlive(false);
-                    ghosts[i].setSpeed(new Vector(0, 0));
+                    ghosts[i].setSpeed(new MathVector(0, 0));
                     ghosts[i].setMovementStrategy(new RandomStrategy());
                     ghosts[i].setMovementAlgorithm(new Strict4WayMovement(0.5)); // Slow the ghost down.
                     score += GHOST_VALUE;
@@ -100,7 +100,7 @@ public class GameState {
 
                     if(lives <= 0) {
                         player.setAlive(false);
-                        player.setSpeed(new Vector(0, 0));
+                        player.setSpeed(new MathVector(0, 0));
                         running = false;
                         resMgr.playSound(R.raw.pacman_death);
                     }
@@ -233,7 +233,7 @@ public class GameState {
         lives = STARTING_LIVES;
         score = 0;
 
-        player.setSpeed(new Vector(0, 0));
+        player.setSpeed(new MathVector(0, 0));
 
         for(Ghost ghost : ghosts) {
             ghost.setPosition(level.randomEnemySpawn());

@@ -1,6 +1,6 @@
 package pac.man.ctrl;
 
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 
 public abstract class MovementAlgorithm {
     public static enum Speed {
@@ -30,5 +30,5 @@ public abstract class MovementAlgorithm {
         MovementAlgorithm.speed = speed;
     }
 
-    public abstract Vector computeSpeed(Vector position, Vector currentSpeed, Vector prefeedDirection);
+    public abstract MathVector computeSpeed(MathVector position, MathVector currentSpeed, MathVector prefeedDirection);
 }

@@ -1,7 +1,7 @@
 package pac.man.ctrl;
 
 import pac.man.model.Player;
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 import pac.man.ctrl.RandomStrategy;
 
 public class SimpleChaseStrategy extends RandomStrategy {
@@ -20,11 +20,11 @@ public class SimpleChaseStrategy extends RandomStrategy {
         this.factor = factor;
     }
 
-    public Vector computeDirection(Vector position, Vector currentSpeed) {
-        Vector ppos = player.getPosition();
+    public MathVector computeDirection(MathVector position, MathVector currentSpeed) {
+        MathVector ppos = player.getPosition();
 
         if(position.distanceTo(ppos) <= range) {
-            return new Vector(ppos.x - position.x, ppos.y - position.y).normalize().scale(factor);
+            return new MathVector(ppos.x - position.x, ppos.y - position.y).normalize().scale(factor);
         }
         else {
             return super.computeDirection(position, currentSpeed);

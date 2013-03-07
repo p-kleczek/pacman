@@ -1,6 +1,6 @@
 package pac.man.ctrl;
 
-import pac.man.util.Vector;
+import pac.man.util.MathVector;
 
 public class NonrestrictiveMovement extends MovementAlgorithm {
     private double factor = 1.0;
@@ -13,7 +13,7 @@ public class NonrestrictiveMovement extends MovementAlgorithm {
         this(1.0);
     }
 
-    public Vector computeSpeed(Vector position, Vector currentSpeed, Vector preferredDir) {
+    public MathVector computeSpeed(MathVector position, MathVector currentSpeed, MathVector preferredDir) {
         // PreferredDirection ought to be normalized here.
         preferredDir.scale(factor * MovementAlgorithm.getSpeed().getGain());
 

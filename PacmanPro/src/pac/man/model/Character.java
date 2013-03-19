@@ -1,10 +1,12 @@
 package pac.man.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import pac.man.ctrl.movement.MovementAlgorithm;
 import pac.man.util.Animation;
-import pac.man.util.Dimension;
+import pac.man.util.AnimationExecutor;
+import pac.man.util.DimensionF;
 import pac.man.util.MathVector;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -14,14 +16,14 @@ public abstract class Character implements Drawable {
 
 	private boolean alive = true;
 
-	private final Map<AnimationType, Animation> animations;
+	private final Map<AnimationType, AnimationExecutor> animations;
 
 	private final Rect boundingRect;
 
 	private AnimationType currentAnimation = AnimationType.IDLE;
 	private MovementAlgorithm movementAlgorithm;
 	private final MathVector position;
-	private final Dimension size;
+	private final DimensionF size;
 
 	/**
 	 * Special behaviour mode.
@@ -34,15 +36,15 @@ public abstract class Character implements Drawable {
 		DEATH, DOWN, IDLE, LEFT, RIGHT, SPECIAL, UP
 	}
 
-	public Character(Dimension size, MathVector position,
-			Map<AnimationType, Animation> animations) {
-		assert size != null;
-		assert position != null;
-		assert animations != null;
-
+	public Character(DimensionF size, MathVector position,
+			Map<AnimationType, Integer> animationMapping) {
 		this.position = position;
-		this.animations = animations;
 		this.size = size;
+
+		this.animations = new HashMap<AnimationType, AnimationExecutor>();
+		for (AnimationType t : animationMapping.keySet()) {
+			animations.put(t, new AnimationExecutor(animationMapping.get(t)));
+		}
 
 		boundingRect = new Rect((int) position.x, (int) position.y,
 				(int) (position.x + size.width),
@@ -51,7 +53,7 @@ public abstract class Character implements Drawable {
 
 	@Override
 	public void draw(final Canvas canvas) {
-		Animation animation = animations.get(currentAnimation);
+		AnimationExecutor animation = animations.get(currentAnimation);
 		animation.draw(boundingRect, canvas);
 	}
 
@@ -67,7 +69,7 @@ public abstract class Character implements Drawable {
 		return position;
 	}
 
-	public Dimension getSize() {
+	public DimensionF getSize() {
 		return size;
 	}
 
@@ -231,5 +233,4 @@ public abstract class Character implements Drawable {
 		}
 	}
 
-	
 }

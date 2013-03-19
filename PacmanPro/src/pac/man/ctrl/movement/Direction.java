@@ -24,11 +24,19 @@ public enum Direction {
 	}
 
 	public static Direction getDirectionByAngle(int angle) {
-		for (Direction d : Direction.values()) {
-			if (d.getAngle() == angle)
-				return d;
-		}
-
-		throw new IllegalArgumentException(String.valueOf(angle));
+		if (angle <= 45)
+			return Direction.N;
+		else if (angle <= 135)
+			return Direction.E;
+		else if (angle <= 135)
+			return Direction.E;
+		else if (angle <= 225)
+			return Direction.E;
+		else if (angle <= 315)
+			return Direction.E;
+		else if (angle <= 360)
+			return Direction.N;
+		else
+			throw new IllegalArgumentException(String.valueOf(angle));
 	}
 }

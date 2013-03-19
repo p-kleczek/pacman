@@ -62,4 +62,5 @@ public class MathVector {
 
 		return dx * dx + dy * dy;
 	}
+	
 }

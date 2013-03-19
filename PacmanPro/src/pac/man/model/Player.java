@@ -3,15 +3,14 @@ package pac.man.model;
 import java.util.Map;
 
 import pac.man.ctrl.movement.NonrestrictiveMovement;
-import pac.man.util.Animation;
-import pac.man.util.Dimension;
+import pac.man.util.DimensionF;
 import pac.man.util.MathVector;
 
 public class Player extends Character {
-	public Player(Dimension size, MathVector position,
-			Map<AnimationType, Animation> animations) {
+	public Player(DimensionF size, MathVector position,
+			Map<AnimationType, Integer> animationMapping) {
 
-		super(size, position, animations);
+		super(size, position, animationMapping);
 
 		// Defaults to nonrestrictive movement algorithm.
 		setMovementAlgorithm(new NonrestrictiveMovement());

@@ -16,8 +16,9 @@ import pac.man.ctrl.strategy.RandomStrategy;
 import pac.man.ctrl.strategy.SimpleChaseStrategy;
 import pac.man.model.Level.CollisionCallback;
 import pac.man.util.Animation;
-import pac.man.util.Dimension;
+import pac.man.util.DimensionF;
 import pac.man.util.MathVector;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
@@ -34,7 +35,7 @@ public class GameState {
 		NORMAL, POWER_UP
 	}
 
-	private final ResourceManager resourceManager;
+	private final Context context;
 
 	private boolean running = true;
 	private int numOpponents = 4;
@@ -51,25 +52,26 @@ public class GameState {
 	private GameMode gameMode = GameMode.NORMAL;
 
 	public GameState(Player player, Level level,
-			ArrayList<Map<Character.AnimationType, Animation>> ghosts,
-			ResourceManager resMgr) {
+			ArrayList<Map<Character.AnimationType, Integer>> ghosts,
+			Context context) {
+		this.context = context;
+
 		this.level = level;
 		this.player = player;
 
 		int size = ghosts.size();
 
-		Animation sampleGhostAnimationFrame = ghosts.get(0).values().iterator()
-				.next();
-		Dimension ghostSize = new Dimension(
-				sampleGhostAnimationFrame.getWidth(),
-				sampleGhostAnimationFrame.getHeight());
+		Integer sampleId = ghosts.get(0).values().iterator().next();
+		Animation sampleGhostAnimationFrame = ResourceManager
+				.getAnimation(sampleId);
+		DimensionF ghostSize = new DimensionF(
+				sampleGhostAnimationFrame.getFrameDimension().width,
+				sampleGhostAnimationFrame.getFrameDimension().height);
 
 		for (int i = 0; i < size; ++i) {
 			this.ghosts.add(new Ghost(ghostSize, new MathVector(-100, 0),
 					ghosts.get(i)));
 		}
-
-		this.resourceManager = resMgr;
 
 		restartLevel();
 	}
@@ -84,19 +86,19 @@ public class GameState {
 
 		score += GHOST_VALUE;
 
-		resourceManager.playSound(R.raw.pacman_eatghost);
+		ResourceManager.playSound(context, R.raw.pacman_eatghost);
 	}
 
 	private void handleNormalInteraction() {
 		lives--;
-		resourceManager.playSound(R.raw.death);
+		ResourceManager.playSound(context, R.raw.death);
 		PacMan.showMessage("Life lost");
 
 		if (lives <= 0) {
 			player.setAlive(false);
 			player.setSpeed(new MathVector(0, 0));
 			running = false;
-			resourceManager.playSound(R.raw.pacman_death);
+			ResourceManager.playSound(context, R.raw.pacman_death);
 		} else {
 			resetLevel();
 		}
@@ -267,7 +269,7 @@ public class GameState {
 		level.setCollisionHandler(new BouncyCollisions());
 
 		modeCounter = POWERUP_DURATION;
-		resourceManager.playSound(R.raw.pacman_intermission);
+		ResourceManager.playSound(context, R.raw.pacman_intermission);
 	}
 
 	public void restartLevel() {
@@ -292,7 +294,7 @@ public class GameState {
 		level.setCollisionCallback(new CollisionCallback() {
 			public boolean onWall(Character who) {
 				if (who == player && gameMode != GameMode.NORMAL) {
-					resourceManager.playSound(R.raw.coin);
+					ResourceManager.playSound(context, R.raw.coin);
 					return true;
 				}
 				return false;
@@ -300,7 +302,7 @@ public class GameState {
 
 			public boolean onPowerup(Character who) {
 				if (who == player) {
-					resourceManager.playSound(R.raw.pacman_eatfruit);
+					ResourceManager.playSound(context, R.raw.pacman_eatfruit);
 					score += POWER_VALUE;
 					setPowerupMode();
 					return true;
@@ -311,7 +313,7 @@ public class GameState {
 			public boolean onGold(Character who) {
 				if (who == player) {
 					score += GOLD_VALUE;
-					resourceManager.playSound(R.raw.pacman_chomp);
+					ResourceManager.playSound(context, R.raw.pacman_chomp);
 					return true;
 				}
 				return false;

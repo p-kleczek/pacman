@@ -6,9 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import pac.man.R;
+import pac.man.ResourceManager;
 import pac.man.ctrl.collision.CollisionHandler;
 import pac.man.ctrl.collision.StickyCollisions;
 import pac.man.util.Animation;
+import pac.man.util.AnimationExecutor;
+import pac.man.util.DimensionI;
 import pac.man.util.MathVector;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,9 +38,8 @@ public class Level {
 		public boolean onPowerup(Character who);
 	}
 
-	private int blockSize = 14;
-	private int height = 0;
-	private int width = 0;
+	private final int blockSize;
+	private DimensionI dimension;
 
 	private final List<Rect> blocks;
 	private final List<Rect> enemySpawns;
@@ -44,34 +47,29 @@ public class Level {
 	private final List<Rect> powerSpawns;
 	private final List<Rect> goldSpawns;
 
-	private Animation gold;
-	private Animation powerup;
+	private AnimationExecutor gold;
+	private AnimationExecutor powerup;
 
 	private CollisionHandler collisionHandler;
-	private CollisionCallback collisionCallback = null;
+	private CollisionCallback collisionCallback;
 
 	private Random random = new Random();
 
-	Bitmap layout;
-	int displayW;
-	int displayH;
+	private Bitmap layout;
 
-	public Level(Animation gold, Animation powerup, Bitmap layout,
-			int displayW, int displayH) {
+	public Level(Bitmap layout, DimensionI displayDimension) {
 		// TODO Rect merging.
 
-		this.powerup = powerup;
-		this.gold = gold;
+		powerup = new AnimationExecutor(R.drawable.cherry);
+		gold = new AnimationExecutor(R.drawable.gold);
 
 		this.layout = layout;
-		this.displayW = displayW;
-		this.displayH = displayH;
 
-		width = layout.getWidth();
-		height = layout.getHeight();
+		dimension = new DimensionI(layout.getWidth(), layout.getHeight());
 
-		blockSize = (int) Math.min((double) displayW / (width - 1),
-				(double) displayH / (height - 1));
+		blockSize = (int) Math.min((double) displayDimension.width
+				/ (dimension.width - 1), (double) displayDimension.height
+				/ (dimension.height - 1));
 
 		blocks = Collections.synchronizedList(new ArrayList<Rect>());
 		playerSpawns = Collections.synchronizedList(new ArrayList<Rect>());
@@ -92,18 +90,17 @@ public class Level {
 		powerSpawns.clear();
 		goldSpawns.clear();
 
-		int goldW = gold.getWidth();
-		int goldH = gold.getHeight();
+		int goldH = gold.getFrameDimension().height;
 
-		int powerW = powerup.getWidth();
-		int powerH = powerup.getHeight();
+		int powerW = powerup.getFrameDimension().width;
+		int powerH = powerup.getFrameDimension().height;
 
-		for (int i = 0; i < height; ++i) {
-			for (int j = 0; j < width; ++j) {
-				Rect r = new Rect(j * blockSize, i * blockSize, (j + 1)
-						* blockSize, (i + 1) * blockSize);
+		for (int h = 0; h < dimension.height; ++h) {
+			for (int w = 0; w < dimension.width; ++w) {
+				Rect r = new Rect(w * blockSize, h * blockSize, (w + 1)
+						* blockSize, (h + 1) * blockSize);
 
-				int pixel = layout.getPixel(j, i) & 0x00ffffff;
+				int pixel = layout.getPixel(w, h) & 0x00ffffff;
 
 				switch (pixel) {
 				case WALL:
@@ -126,6 +123,7 @@ public class Level {
 
 				default:
 					break;
+//					throw new IllegalArgumentException(String.valueOf(pixel));
 				}
 			}
 		}

@@ -6,15 +6,15 @@ import pac.man.ctrl.movement.NonrestrictiveMovement;
 import pac.man.ctrl.strategy.MovementStrategy;
 import pac.man.ctrl.strategy.RandomStrategy;
 import pac.man.util.Animation;
-import pac.man.util.Dimension;
+import pac.man.util.DimensionF;
 import pac.man.util.MathVector;
 
 public class Ghost extends Character {
 	private MovementStrategy movementStrategy;
 
-	public Ghost(Dimension size, MathVector position,
-			Map<AnimationType, Animation> animations) {
-		super(size, position, animations);
+	public Ghost(DimensionF size, MathVector position,
+			Map<AnimationType, Integer> animationMapping) {
+		super(size, position, animationMapping);
 
 		// Defaults to nonrestrictive, aggresive movement algorithm.
 		setMovementAlgorithm(new NonrestrictiveMovement());

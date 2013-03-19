@@ -2,15 +2,17 @@ package pac.man;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import pac.man.model.Character;
 import pac.man.model.Character.AnimationType;
 import pac.man.model.GameState;
+import pac.man.model.Ghost;
 import pac.man.model.Level;
 import pac.man.model.Player;
 import pac.man.util.Animation;
-import pac.man.util.Dimension;
+import pac.man.util.DimensionF;
 import pac.man.util.MathVector;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -23,7 +25,6 @@ import android.view.SurfaceView;
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 	// private Context context;
 	private final MainThread thread;
-	private final ResourceManager resMgr;
 	private boolean initalized;
 
 	private int levelCounter;
@@ -39,139 +40,130 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		// this.context = context;
 
-		resMgr = new ResourceManager(this, context);
-
 		thread = new MainThread(getHolder(), this);
 		thread.start();
 	}
 
 	private void init() {
-		// Levels
-		levels = new Level[6];
-		levels[0] = resMgr.getLevel(R.raw.level1);
-		levels[1] = resMgr.getLevel(R.raw.level2);
-		levels[2] = resMgr.getLevel(R.raw.level3);
-		levels[3] = resMgr.getLevel(R.raw.level4);
-		levels[4] = resMgr.getLevel(R.raw.test_level);
-		levels[5] = resMgr.getLevel(R.raw.test_level2);
+		ResourceManager.loadAnimation(this, R.drawable.cherry, 2, 500);
+		ResourceManager.loadAnimation(this, R.drawable.gold, 2, 500);
 
 		// Sounds
-		resMgr.loadSound(R.raw.coin);
-		resMgr.loadSound(R.raw.powerup);
-		resMgr.loadSound(R.raw.death);
+		ResourceManager.loadSound(getContext(), R.raw.coin);
+		ResourceManager.loadSound(getContext(), R.raw.powerup);
+		ResourceManager.loadSound(getContext(), R.raw.death);
 
-		resMgr.loadSound(R.raw.pacman_death);
-		resMgr.loadSound(R.raw.pacman_chomp);
-		resMgr.loadSound(R.raw.pacman_eatghost);
-		resMgr.loadSound(R.raw.pacman_eatfruit);
-		resMgr.loadSound(R.raw.pacman_intermission);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_death);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_chomp);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_eatghost);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_eatfruit);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_intermission);
 
-		resMgr.loadSound(R.raw.pacman_death);
-		resMgr.loadSound(R.raw.pacman_chomp);
-		resMgr.loadSound(R.raw.pacman_eatghost);
-		resMgr.loadSound(R.raw.pacman_eatfruit);
-		resMgr.loadSound(R.raw.pacman_intermission);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_death);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_chomp);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_eatghost);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_eatfruit);
+		ResourceManager.loadSound(getContext(), R.raw.pacman_intermission);
 
 		// Animations
-		final Map<Character.AnimationType, Animation> animations = new EnumMap<Character.AnimationType, Animation>(
+
+		final Map<Character.AnimationType, Integer> animations = new EnumMap<Character.AnimationType, Integer>(
 				Character.AnimationType.class);
 
 		// XXX: Shit, this is ugly...
-		final ArrayList<Map<Character.AnimationType, Animation>> ghosts = new ArrayList<Map<Character.AnimationType, Animation>>();
-		ghosts.add(new EnumMap<Character.AnimationType, Animation>(
+		final ArrayList<Map<AnimationType, Integer>> ghosts = new ArrayList<Map<Character.AnimationType, Integer>>();
+		ghosts.add(new EnumMap<Character.AnimationType, Integer>(
 				Character.AnimationType.class));
-		ghosts.add(new EnumMap<Character.AnimationType, Animation>(
+		ghosts.add(new EnumMap<Character.AnimationType, Integer>(
 				Character.AnimationType.class));
-		ghosts.add(new EnumMap<Character.AnimationType, Animation>(
+		ghosts.add(new EnumMap<Character.AnimationType, Integer>(
 				Character.AnimationType.class));
-		ghosts.add(new EnumMap<Character.AnimationType, Animation>(
+		ghosts.add(new EnumMap<Character.AnimationType, Integer>(
 				Character.AnimationType.class));
+
+		ResourceManager.loadAnimation(this, R.drawable.idle, 1, 10000);
+		ResourceManager.loadAnimation(this, R.drawable.right, 4, 500);
+		ResourceManager.loadAnimation(this, R.drawable.up, 4, 500);
+		ResourceManager.loadAnimation(this, R.drawable.left, 4, 500);
+		ResourceManager.loadAnimation(this, R.drawable.down, 4, 500);
+		ResourceManager.loadAnimation(this, R.drawable.boing, 2, 500);
+		ResourceManager.loadAnimation(this, R.drawable.death, 13, 750);
 
 		// Player animootions.
-		animations.put(AnimationType.IDLE,
-				resMgr.getAnimation(R.drawable.idle, 1, 10000));
-		animations.put(AnimationType.RIGHT,
-				resMgr.getAnimation(R.drawable.right, 4, 500));
-		animations.put(AnimationType.UP,
-				resMgr.getAnimation(R.drawable.up, 4, 500));
-		animations.put(AnimationType.LEFT,
-				resMgr.getAnimation(R.drawable.left, 4, 500));
-		animations.put(AnimationType.DOWN,
-				resMgr.getAnimation(R.drawable.down, 4, 500));
-		animations.put(AnimationType.SPECIAL,
-				resMgr.getAnimation(R.drawable.boing, 2, 500));
-		animations.put(AnimationType.DEATH,
-				resMgr.getAnimation(R.drawable.death, 13, 750));
+		animations.put(AnimationType.IDLE, R.drawable.idle);
+		animations.put(AnimationType.RIGHT, R.drawable.right);
+		animations.put(AnimationType.UP, R.drawable.up);
+		animations.put(AnimationType.LEFT, R.drawable.left);
+		animations.put(AnimationType.DOWN, R.drawable.down);
+		animations.put(AnimationType.SPECIAL, R.drawable.boing);
+		animations.put(AnimationType.DEATH, R.drawable.death);
+
+		int[] ids = new int[] { R.drawable.red_right, R.drawable.red_up,
+				R.drawable.red_left, R.drawable.red_down, R.drawable.ill_white,
+				R.drawable.ill_blue, R.drawable.blue_right, R.drawable.blue_up,
+				R.drawable.blue_left, R.drawable.blue_down,
+				R.drawable.green_right, R.drawable.green_up,
+				R.drawable.green_left, R.drawable.green_down,
+				R.drawable.orange_right, R.drawable.orange_up,
+				R.drawable.orange_left, R.drawable.orange_down };
+
+		for (int id : ids) {
+			ResourceManager.loadAnimation(this, id, 2, 500);
+		}
 
 		// Ghost animutions
-		ghosts.get(0).put(AnimationType.IDLE,
-				resMgr.getAnimation(R.drawable.red_down, 2, 500));
-		ghosts.get(0).put(AnimationType.RIGHT,
-				resMgr.getAnimation(R.drawable.red_right, 2, 500));
-		ghosts.get(0).put(AnimationType.UP,
-				resMgr.getAnimation(R.drawable.red_up, 2, 500));
-		ghosts.get(0).put(AnimationType.DOWN,
-				resMgr.getAnimation(R.drawable.red_down, 2, 500));
-		ghosts.get(0).put(AnimationType.LEFT,
-				resMgr.getAnimation(R.drawable.red_left, 2, 500));
-		ghosts.get(0).put(AnimationType.DEATH,
-				resMgr.getAnimation(R.drawable.ill_white, 2, 500));
-		ghosts.get(0).put(AnimationType.SPECIAL,
-				resMgr.getAnimation(R.drawable.ill_blue, 2, 500));
+		ghosts.get(0).put(AnimationType.IDLE, R.drawable.red_down);
+		ghosts.get(0).put(AnimationType.RIGHT, R.drawable.red_right);
+		ghosts.get(0).put(AnimationType.LEFT, R.drawable.red_left);
+		ghosts.get(0).put(AnimationType.UP, R.drawable.red_up);
+		ghosts.get(0).put(AnimationType.DOWN, R.drawable.red_down);
+		ghosts.get(0).put(AnimationType.DEATH, R.drawable.ill_white);
+		ghosts.get(0).put(AnimationType.SPECIAL, R.drawable.ill_blue);
 
-		ghosts.get(1).put(AnimationType.IDLE,
-				resMgr.getAnimation(R.drawable.green_down, 2, 500));
-		ghosts.get(1).put(AnimationType.RIGHT,
-				resMgr.getAnimation(R.drawable.green_right, 2, 500));
-		ghosts.get(1).put(AnimationType.UP,
-				resMgr.getAnimation(R.drawable.green_up, 2, 500));
-		ghosts.get(1).put(AnimationType.DOWN,
-				resMgr.getAnimation(R.drawable.green_down, 2, 500));
-		ghosts.get(1).put(AnimationType.LEFT,
-				resMgr.getAnimation(R.drawable.green_left, 2, 500));
-		ghosts.get(1).put(AnimationType.DEATH,
-				resMgr.getAnimation(R.drawable.ill_white, 2, 500));
-		ghosts.get(1).put(AnimationType.SPECIAL,
-				resMgr.getAnimation(R.drawable.ill_blue, 2, 500));
+		ghosts.get(1).put(AnimationType.IDLE, R.drawable.blue_down);
+		ghosts.get(1).put(AnimationType.RIGHT, R.drawable.blue_right);
+		ghosts.get(0).put(AnimationType.LEFT, R.drawable.blue_left);
+		ghosts.get(1).put(AnimationType.UP, R.drawable.blue_up);
+		ghosts.get(1).put(AnimationType.DOWN, R.drawable.blue_down);
+		ghosts.get(1).put(AnimationType.DEATH, R.drawable.ill_white);
+		ghosts.get(1).put(AnimationType.SPECIAL, R.drawable.ill_blue);
 
-		ghosts.get(2).put(AnimationType.IDLE,
-				resMgr.getAnimation(R.drawable.blue_down, 2, 500));
-		ghosts.get(2).put(AnimationType.RIGHT,
-				resMgr.getAnimation(R.drawable.blue_right, 2, 500));
-		ghosts.get(2).put(AnimationType.UP,
-				resMgr.getAnimation(R.drawable.blue_up, 2, 500));
-		ghosts.get(2).put(AnimationType.DOWN,
-				resMgr.getAnimation(R.drawable.blue_down, 2, 500));
-		ghosts.get(2).put(AnimationType.LEFT,
-				resMgr.getAnimation(R.drawable.blue_left, 2, 500));
-		ghosts.get(2).put(AnimationType.DEATH,
-				resMgr.getAnimation(R.drawable.ill_white, 2, 500));
-		ghosts.get(2).put(AnimationType.SPECIAL,
-				resMgr.getAnimation(R.drawable.ill_blue, 2, 500));
+		ghosts.get(2).put(AnimationType.IDLE, R.drawable.green_down);
+		ghosts.get(2).put(AnimationType.RIGHT, R.drawable.green_right);
+		ghosts.get(0).put(AnimationType.LEFT, R.drawable.green_left);
+		ghosts.get(2).put(AnimationType.UP, R.drawable.green_up);
+		ghosts.get(2).put(AnimationType.DOWN, R.drawable.green_down);
+		ghosts.get(2).put(AnimationType.DEATH, R.drawable.ill_white);
+		ghosts.get(2).put(AnimationType.SPECIAL, R.drawable.ill_blue);
 
-		ghosts.get(3).put(AnimationType.IDLE,
-				resMgr.getAnimation(R.drawable.orange_down, 2, 500));
-		ghosts.get(3).put(AnimationType.RIGHT,
-				resMgr.getAnimation(R.drawable.orange_right, 2, 500));
-		ghosts.get(3).put(AnimationType.UP,
-				resMgr.getAnimation(R.drawable.orange_up, 2, 500));
-		ghosts.get(3).put(AnimationType.DOWN,
-				resMgr.getAnimation(R.drawable.orange_down, 2, 500));
-		ghosts.get(3).put(AnimationType.LEFT,
-				resMgr.getAnimation(R.drawable.orange_left, 2, 500));
-		ghosts.get(3).put(AnimationType.DEATH,
-				resMgr.getAnimation(R.drawable.ill_white, 2, 500));
-		ghosts.get(3).put(AnimationType.SPECIAL,
-				resMgr.getAnimation(R.drawable.ill_blue, 2, 500));
+		ghosts.get(3).put(AnimationType.IDLE, R.drawable.orange_down);
+		ghosts.get(3).put(AnimationType.RIGHT, R.drawable.orange_right);
+		ghosts.get(0).put(AnimationType.LEFT, R.drawable.orange_left);
+		ghosts.get(3).put(AnimationType.UP, R.drawable.orange_up);
+		ghosts.get(3).put(AnimationType.DOWN, R.drawable.orange_down);
+		ghosts.get(3).put(AnimationType.DEATH, R.drawable.ill_white);
+		ghosts.get(3).put(AnimationType.SPECIAL, R.drawable.ill_blue);
 
-		Animation samplePlayerAnimationFrame = animations.values().iterator()
-				.next();
-		Dimension playerSize = new Dimension(
-				samplePlayerAnimationFrame.getWidth(),
-				samplePlayerAnimationFrame.getHeight());
+		Integer sampleId = animations.values().iterator().next();
+		Animation samplePlayerAnimationFrame = ResourceManager
+				.getAnimation(sampleId);
+		DimensionF playerSize = new DimensionF(
+				samplePlayerAnimationFrame.getFrameDimension().width,
+				samplePlayerAnimationFrame.getFrameDimension().height);
 
 		player = new Player(playerSize, new MathVector(-200, 0), animations);
-		gameState = new GameState(player, levels[levelCounter], ghosts, resMgr);
+
+		// Levels
+		levels = new Level[6];
+		levels[0] = ResourceManager.getLevel(this, R.raw.level1);
+		levels[1] = ResourceManager.getLevel(this, R.raw.level2);
+		levels[2] = ResourceManager.getLevel(this, R.raw.level3);
+		levels[3] = ResourceManager.getLevel(this, R.raw.level4);
+		levels[4] = ResourceManager.getLevel(this, R.raw.test_level);
+		levels[5] = ResourceManager.getLevel(this, R.raw.test_level2);
+
+		gameState = new GameState(player, levels[levelCounter], ghosts,
+				getContext());
 
 		gameState.setNumOpponents(PacMan.pNOps);
 
@@ -225,7 +217,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		if (!thread.getRunning() && isMouseAction) {
 			final MathVector ppos = player.getPosition();
-			final Dimension psize = player.getSize();
+			final DimensionF psize = player.getSize();
 			final MathVector touch = new MathVector(event.getX(), event.getY());
 
 			final MathVector direction = new MathVector(touch.x - ppos.x
@@ -281,9 +273,5 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 		thread.setRunning(true);
 		redraw();
 		thread.setRunning(false);
-	}
-
-	public ResourceManager getResourceManager() {
-		return resMgr;
 	}
 }

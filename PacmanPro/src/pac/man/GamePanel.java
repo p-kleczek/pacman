@@ -10,6 +10,7 @@ import pac.man.model.GameState;
 import pac.man.model.Level;
 import pac.man.model.Player;
 import pac.man.util.Animation;
+import pac.man.util.Dimension;
 import pac.man.util.MathVector;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -163,7 +164,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 		ghosts.get(3).put(AnimationType.SPECIAL,
 				resMgr.getAnimation(R.drawable.ill_blue, 2, 500));
 
-		player = new Player(new MathVector(-200, 0), animations);
+		Animation samplePlayerAnimationFrame = animations.values().iterator()
+				.next();
+		Dimension playerSize = new Dimension(
+				samplePlayerAnimationFrame.getWidth(),
+				samplePlayerAnimationFrame.getHeight());
+
+		player = new Player(playerSize, new MathVector(-200, 0), animations);
 		gameState = new GameState(player, levels[levelCounter], ghosts, resMgr);
 
 		gameState.setNumOpponents(PacMan.pNOps);
@@ -218,11 +225,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		if (!thread.getRunning() && isMouseAction) {
 			final MathVector ppos = player.getPosition();
-			final MathVector psize = player.getSize();
+			final Dimension psize = player.getSize();
 			final MathVector touch = new MathVector(event.getX(), event.getY());
 
-			final MathVector direction = new MathVector(touch.x - ppos.x - psize.x / 2, touch.y
-					- ppos.y - psize.y / 2);
+			final MathVector direction = new MathVector(touch.x - ppos.x
+					- psize.width / 2, touch.y - ppos.y - psize.height / 2);
 
 			direction.normalize();
 			player.handleMove(direction);

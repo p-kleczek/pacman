@@ -3,14 +3,16 @@ package pac.man.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import pac.man.ctrl.movement.Direction;
 import pac.man.ctrl.movement.MovementAlgorithm;
-import pac.man.util.Animation;
 import pac.man.util.AnimationExecutor;
 import pac.man.util.DimensionF;
 import pac.man.util.DimensionI;
 import pac.man.util.MathVector;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+
+// TODO: resetowanie animacji "death" (np. dla gracza: w chwili kolizji z duszkiem (badz przy ponownych narodzinach))
 
 public abstract class Character implements Drawable {
 	public static final double SPEEDUP_FACTOR = 2.3;
@@ -31,7 +33,7 @@ public abstract class Character implements Drawable {
 	 */
 	protected boolean specialModeOn;
 
-	protected final MathVector speed = new MathVector(0, 0);
+	protected final MathVector speed = new MathVector();
 
 	public static enum AnimationType {
 		DEATH, DOWN, IDLE, LEFT, RIGHT, SPECIAL, UP
@@ -52,8 +54,39 @@ public abstract class Character implements Drawable {
 				(int) (position.y + size.height));
 	}
 
+	private void computeCurrentAnimationType() {
+		if (!isAlive()) {
+			currentAnimation = AnimationType.DEATH;
+		} else if (isSpecial()) {
+			currentAnimation = AnimationType.SPECIAL;
+		} else if (!isMoving()) {
+			currentAnimation = AnimationType.IDLE;
+		} else {
+			int angle = speed.getAzimuth();
+
+			// FIXME : dlaczego takie pomieszanie UP/DOWN?
+			switch (Direction.getDirectionByAngle(angle)) {
+			case N:
+				currentAnimation = AnimationType.DOWN;
+				break;
+			case S:
+				currentAnimation = AnimationType.UP;
+				break;
+			case W:
+				currentAnimation = AnimationType.LEFT;
+				break;
+			case E:
+				currentAnimation = AnimationType.RIGHT;
+				break;
+			default:
+				throw new IllegalArgumentException();
+			}
+		}
+	}
+
 	@Override
 	public void draw(final Canvas canvas) {
+		computeCurrentAnimationType();
 		AnimationExecutor animation = animations.get(currentAnimation);
 		animation.draw(boundingRect, canvas);
 	}
@@ -92,8 +125,6 @@ public abstract class Character implements Drawable {
 
 	public void setAlive(boolean state) {
 		alive = state;
-
-		computeActiveAnimation();
 	}
 
 	public void setMovementAlgorithm(final MovementAlgorithm a) {
@@ -101,28 +132,20 @@ public abstract class Character implements Drawable {
 	}
 
 	public void setPosition(final MathVector pos) {
-		this.position.x = pos.x;
-		this.position.y = pos.y;
-
-		computeActiveAnimation();
+		position.set(pos);
 	}
 
 	public void setSpecial(boolean s) {
 		specialModeOn = s;
-
-		computeActiveAnimation();
 	}
 
 	public void setSpeed(final MathVector speed) {
-		this.speed.x = speed.x;
-		this.speed.y = speed.y;
-
-		computeActiveAnimation();
+		this.speed.set(speed);
 	}
-	
+
 	private void updatePosition(long timeInterval, DimensionI canvasSize) {
 		final double factor = (isSpecial() ? SPEEDUP_FACTOR : 1.0) / 1000.0;
-		
+
 		position.x += factor * speed.x * timeInterval;
 		position.y += factor * speed.y * timeInterval;
 
@@ -139,106 +162,22 @@ public abstract class Character implements Drawable {
 			position.y = -size.height;
 		}
 	}
-	
+
 	private void updateBoundingRect(DimensionI canvasSize) {
 		boundingRect.left = (int) position.x;
 		boundingRect.right = (int) (position.x + size.width);
 		boundingRect.top = (int) (position.y);
 		boundingRect.bottom = (int) (position.y + size.height);
-	}	
-	
+	}
+
 	private void updateAnimation(long dt) {
 		animations.get(currentAnimation).update(dt);
 	}
-	
+
 	public void update(long timeInterval, DimensionI canvasSize) {
 		updatePosition(timeInterval, canvasSize);
 		updateBoundingRect(canvasSize);
 		updateAnimation(timeInterval);
-	}
-
-	private void computeActiveAnimation() {
-		if (!isAlive()) {
-			setActiveAnimation(AnimationType.DEATH);
-		} else if (isSpecial()) {
-			setActiveAnimation(AnimationType.SPECIAL);
-		} else if (!isMoving()) {
-			setActiveAnimation(AnimationType.IDLE);
-		} else {
-			// Since the coordinate system looks like this:
-			//
-			// +----------------+-----------> X
-			// | |
-			// | |
-			// | |
-			// +--------------(ಠ_ಠ) <--- PacMan
-			// |
-			// v
-			// Y
-			//
-			// ...we need to reverse the y coordinate when computing the angle.
-			// We also add 360 degrees to eliminate negative values not to
-			// produce IndexOutOfBoundsException.
-
-			final long angle = 360L + Math.round(Math.toDegrees(Math.atan2(
-					-speed.y, speed.x)));
-
-			// Now our direction field looks like this:
-			//
-			// |
-			// | ^
-			// <- | |
-			// |
-			// -------+--------
-			// |
-			// | | ->
-			// v |
-			// |
-			//
-			// ...but we want it to look like this:
-			//
-			// \ ^ /
-			// \ | /
-			// \ /
-			// \ /
-			// <- X ->
-			// / \
-			// / \
-			// / | \
-			// / v \
-			//
-			// ...so we add extra 45 degrees to the angle rotating the
-			// coordinate system.
-
-			final int index = 1 + (int) (((angle + 45) % 360) / 90);
-
-			AnimationType animationType;
-			switch (index) {
-			case 1:
-				animationType = AnimationType.RIGHT;
-				break;
-			case 2:
-				animationType = AnimationType.UP;
-				break;
-			case 3:
-				animationType = AnimationType.LEFT;
-				break;
-			case 4:
-				animationType = AnimationType.DOWN;
-				break;
-			default:
-				throw new IllegalArgumentException();
-			}
-
-			setActiveAnimation(animationType);
-		}
-	}
-
-	private void setActiveAnimation(final AnimationType index) {
-		if (!currentAnimation.equals(index)) {
-			currentAnimation = index;
-			animations.get(index).reset();
-		}
 	}
 
 }

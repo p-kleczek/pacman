@@ -99,7 +99,6 @@ public class PacMan extends Activity implements SensorEventListener {
 		case R.id.menu_settings:
 			Intent settingsActivity = new Intent(getBaseContext(),
 					Preferences.class);
-			System.out.println("settings");
 			startActivity(settingsActivity);
 			return true;
 
@@ -122,7 +121,7 @@ public class PacMan extends Activity implements SensorEventListener {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (gamePanel.getThread().getRunning()) {
+		if (gamePanel.getThread().isRunning()) {
 			menu.findItem(R.id.menu_resume).setVisible(false);
 			menu.findItem(R.id.menu_pause).setVisible(true);
 		} else {

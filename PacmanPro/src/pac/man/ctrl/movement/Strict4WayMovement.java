@@ -5,6 +5,7 @@ import pac.man.util.MathVector;
 
 public class Strict4WayMovement extends MovementAlgorithm {
 	private final double factor;
+	private final MathVector vec = new MathVector(0, 0);
 
 	public Strict4WayMovement(double factor) {
 		this.factor = factor;
@@ -19,13 +20,11 @@ public class Strict4WayMovement extends MovementAlgorithm {
 			MathVector currentSpeed, MathVector preferredDir) {
 
 		// Similar to Player.handleMove() logic. It's documented there.
-		int angle = (int) (360 + Math.round(Math.toDegrees(Math.atan2(
-				-preferredDir.y, preferredDir.x))));
+		int angle = preferredDir.getAzimuth();
 
-		// TODO : sprawdzic i uproscic
-		int index = (angle + 45) % 360;
-
-		MathVector vec = Direction.getDirectionByAngle(index).getShift();
+		vec.x = Direction.getDirectionByAngle(angle).getShift().x;
+		vec.y = Direction.getDirectionByAngle(angle).getShift().y;
+		
 		return vec.scale(factor * PacMan.getSpeed().getGain());
 	}
 }

@@ -53,7 +53,7 @@ public class MainThread extends Thread {
 			notify();
 	}
 
-	synchronized public boolean getRunning() {
+	synchronized public boolean isRunning() {
 		return running;
 	}
 }

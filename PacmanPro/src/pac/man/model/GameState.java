@@ -365,4 +365,9 @@ public class GameState {
 		else
 			return modeCounter;
 	}
+	
+	private void debug() {
+		for (Ghost g : ghosts)
+			System.out.println(String.format("p = %s    v = %s", g.getPosition().toString(), g.getSpeed().toString()));
+	}
 }

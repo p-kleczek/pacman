@@ -1,10 +1,9 @@
 package pac.man.ctrl.collision;
 
-import android.graphics.Rect;
-import android.graphics.Canvas;
+import pac.man.model.Character;
 import pac.man.util.DimensionI;
 import pac.man.util.MathVector;
-import pac.man.model.Character;
+import android.graphics.Rect;
 
 public class BouncyCollisions implements CollisionHandler {
 	public void handle(long dt, DimensionI canvasDimension, Rect rect, Character c) {

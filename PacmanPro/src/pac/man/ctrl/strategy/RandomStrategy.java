@@ -4,7 +4,7 @@ import java.util.Random;
 import pac.man.util.MathVector;
 
 public class RandomStrategy extends MovementStrategy {
-	private Random r = new Random();
+	private Random r = new Random(0);
 
 	public MathVector computeDirection(MathVector position,
 			MathVector currentSpeed) {

@@ -46,8 +46,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	private void init() {
-		ResourceManager.loadAnimation(this, R.drawable.cherry, 2, 500);
-		ResourceManager.loadAnimation(this, R.drawable.gold, 2, 500);
+		ResourceManager.loadAnimation(this, R.drawable.cherry, 2, 4000);
+		ResourceManager.loadAnimation(this, R.drawable.gold, 2, 4000);
 
 		// Sounds
 		ResourceManager.loadSound(getContext(), R.raw.coin);
@@ -90,7 +90,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 		ResourceManager.loadAnimation(this, R.drawable.boing, 2, 500);
 		ResourceManager.loadAnimation(this, R.drawable.death, 13, 750);
 
-		// Player animootions.
+		// Player animations.
 		animations.put(AnimationType.IDLE, R.drawable.idle);
 		animations.put(AnimationType.RIGHT, R.drawable.right);
 		animations.put(AnimationType.UP, R.drawable.up);
@@ -123,7 +123,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		ghosts.get(1).put(AnimationType.IDLE, R.drawable.blue_down);
 		ghosts.get(1).put(AnimationType.RIGHT, R.drawable.blue_right);
-		ghosts.get(0).put(AnimationType.LEFT, R.drawable.blue_left);
+		ghosts.get(1).put(AnimationType.LEFT, R.drawable.blue_left);
 		ghosts.get(1).put(AnimationType.UP, R.drawable.blue_up);
 		ghosts.get(1).put(AnimationType.DOWN, R.drawable.blue_down);
 		ghosts.get(1).put(AnimationType.DEATH, R.drawable.ill_white);
@@ -131,7 +131,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		ghosts.get(2).put(AnimationType.IDLE, R.drawable.green_down);
 		ghosts.get(2).put(AnimationType.RIGHT, R.drawable.green_right);
-		ghosts.get(0).put(AnimationType.LEFT, R.drawable.green_left);
+		ghosts.get(2).put(AnimationType.LEFT, R.drawable.green_left);
 		ghosts.get(2).put(AnimationType.UP, R.drawable.green_up);
 		ghosts.get(2).put(AnimationType.DOWN, R.drawable.green_down);
 		ghosts.get(2).put(AnimationType.DEATH, R.drawable.ill_white);
@@ -139,7 +139,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		ghosts.get(3).put(AnimationType.IDLE, R.drawable.orange_down);
 		ghosts.get(3).put(AnimationType.RIGHT, R.drawable.orange_right);
-		ghosts.get(0).put(AnimationType.LEFT, R.drawable.orange_left);
+		ghosts.get(3).put(AnimationType.LEFT, R.drawable.orange_left);
 		ghosts.get(3).put(AnimationType.UP, R.drawable.orange_up);
 		ghosts.get(3).put(AnimationType.DOWN, R.drawable.orange_down);
 		ghosts.get(3).put(AnimationType.DEATH, R.drawable.ill_white);
@@ -216,13 +216,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 		final boolean isMouseAction = event.getAction() == MotionEvent.ACTION_DOWN
 				|| event.getAction() == MotionEvent.ACTION_MOVE;
 
-		if (!thread.getRunning() && isMouseAction) {
+		if (thread.isRunning() && isMouseAction) {
 			final MathVector ppos = player.getPosition();
 			final DimensionF psize = player.getSize();
 			final MathVector touch = new MathVector(event.getX(), event.getY());
 
 			final MathVector direction = new MathVector(touch.x - ppos.x
-					- psize.width / 2, touch.y - ppos.y - psize.height / 2);
+					- psize.width / 2, -(touch.y - ppos.y - psize.height / 2));
 
 			direction.normalize();
 			player.handleMove(direction);

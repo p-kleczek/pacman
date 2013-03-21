@@ -23,18 +23,22 @@ public enum Direction {
 		return angle;
 	}
 
+	/**
+	 * 
+	 * @param angle
+	 *            azymut w zakresie [0,359] stopni
+	 * @return kierunek odpowiadajacy cwiartce, w ktorej znajduje sie azymut
+	 */
 	public static Direction getDirectionByAngle(int angle) {
 		if (angle <= 45)
 			return Direction.N;
 		else if (angle <= 135)
 			return Direction.E;
-		else if (angle <= 135)
-			return Direction.E;
 		else if (angle <= 225)
-			return Direction.E;
+			return Direction.S;
 		else if (angle <= 315)
-			return Direction.E;
-		else if (angle <= 360)
+			return Direction.W;
+		else if (angle <= 359)
 			return Direction.N;
 		else
 			throw new IllegalArgumentException(String.valueOf(angle));

@@ -123,13 +123,14 @@ public class Level {
 
 				default:
 					break;
-//					throw new IllegalArgumentException(String.valueOf(pixel));
+				// throw new IllegalArgumentException(String.valueOf(pixel));
 				}
 			}
 		}
 	}
 
-	public synchronized void update(long dt, Canvas canvas, Character c) {
+	public synchronized void update(long dt, DimensionI canvasDimension,
+			Character c) {
 		// Update animations:
 		powerup.update(dt);
 		gold.update(dt);
@@ -143,7 +144,7 @@ public class Level {
 		while (blockIter.hasNext()) {
 			Rect b = blockIter.next();
 			if (Rect.intersects(p, b)) {
-				collisionHandler.handle(dt, canvas, b, c);
+				collisionHandler.handle(dt, canvasDimension, b, c);
 
 				if (collisionCallback != null) {
 					if (collisionCallback.onWall(c)) {

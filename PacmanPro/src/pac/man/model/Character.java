@@ -7,6 +7,7 @@ import pac.man.ctrl.movement.MovementAlgorithm;
 import pac.man.util.Animation;
 import pac.man.util.AnimationExecutor;
 import pac.man.util.DimensionF;
+import pac.man.util.DimensionI;
 import pac.man.util.MathVector;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -106,7 +107,7 @@ public abstract class Character implements Drawable {
 		computeActiveAnimation();
 	}
 
-	public void setSpecial(final boolean s) {
+	public void setSpecial(boolean s) {
 		specialModeOn = s;
 
 		computeActiveAnimation();
@@ -118,35 +119,42 @@ public abstract class Character implements Drawable {
 
 		computeActiveAnimation();
 	}
+	
+	private void updatePosition(long timeInterval, DimensionI canvasSize) {
+		final double factor = (isSpecial() ? SPEEDUP_FACTOR : 1.0) / 1000.0;
+		
+		position.x += factor * speed.x * timeInterval;
+		position.y += factor * speed.y * timeInterval;
 
-	public void update(long dt, Canvas canvas) {
-		final int canvasW = canvas.getWidth();
-		final int canvasH = canvas.getHeight();
-
-		final double factor = isSpecial() ? SPEEDUP_FACTOR : 1.0;
-
-		animations.get(currentAnimation).update(dt);
-
-		position.x += factor * speed.x * dt / 1000.0;
-
+		// Restrict move to board.
 		if (position.x < -size.width) {
-			position.x = canvasW;
-		} else if (position.x > canvasW) {
+			position.x = canvasSize.width;
+		} else if (position.x > canvasSize.width) {
 			position.x = -size.width;
 		}
 
-		position.y += factor * speed.y * dt / 1000.0;
-
 		if (position.y < -size.height) {
-			position.y = canvasH;
-		} else if (position.y > canvasH) {
+			position.y = canvasSize.height;
+		} else if (position.y > canvasSize.height) {
 			position.y = -size.height;
 		}
-
+	}
+	
+	private void updateBoundingRect(DimensionI canvasSize) {
 		boundingRect.left = (int) position.x;
 		boundingRect.right = (int) (position.x + size.width);
 		boundingRect.top = (int) (position.y);
 		boundingRect.bottom = (int) (position.y + size.height);
+	}	
+	
+	private void updateAnimation(long dt) {
+		animations.get(currentAnimation).update(dt);
+	}
+	
+	public void update(long timeInterval, DimensionI canvasSize) {
+		updatePosition(timeInterval, canvasSize);
+		updateBoundingRect(canvasSize);
+		updateAnimation(timeInterval);
 	}
 
 	private void computeActiveAnimation() {

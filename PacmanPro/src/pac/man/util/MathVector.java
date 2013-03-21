@@ -14,9 +14,11 @@ public class MathVector {
 		this.y = vec.y;
 	}
 
-	public void add(final MathVector another) {
+	public MathVector add(final MathVector another) {
 		x += another.x;
 		y += another.y;
+		
+		return this;
 	}
 
 	public MathVector scale(final double k) {
@@ -52,10 +54,12 @@ public class MathVector {
 		return this;
 	}
 
+	// XXX : this belongs to the Point class 
 	public double distanceTo(final MathVector v) {
 		return Math.sqrt(distanceSquaredTo(v));
 	}
 
+	// XXX : this belongs to the Point class 
 	public double distanceSquaredTo(final MathVector v) {
 		final double dx = v.x - x;
 		final double dy = v.y - y;

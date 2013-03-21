@@ -17,6 +17,7 @@ import pac.man.ctrl.strategy.SimpleChaseStrategy;
 import pac.man.model.Level.CollisionCallback;
 import pac.man.util.Animation;
 import pac.man.util.DimensionF;
+import pac.man.util.DimensionI;
 import pac.man.util.MathVector;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -157,20 +158,20 @@ public class GameState {
 
 	}
 
-	private void updateLevel(long dt, Canvas canvas) {
-		level.update(dt, canvas, player);
+	private void updateLevel(long dt, DimensionI canvasDimension) {
+		level.update(dt, canvasDimension, player);
 		for (int i = 0; i < getActualGhostNumber(); ++i) {
-			level.update(dt, canvas, ghosts.get(i));
+			level.update(dt, canvasDimension, ghosts.get(i));
 		}
 	}
 
-	private void updateGhosts(long dt, Canvas canvas) {
+	private void updateGhosts(long dt, DimensionI canvasDimension) {
 		for (int i = 0; i < getActualGhostNumber(); ++i) {
-			ghosts.get(i).update(dt, canvas);
+			ghosts.get(i).update(dt, canvasDimension);
 		}
 	}
 
-	public void update(long dt, Canvas canvas) {
+	public void update(long dt, DimensionI canvasDimension) {
 		modeCounter -= dt;
 
 		if (gameMode != GameMode.NORMAL && modeCounter <= 0) {
@@ -187,16 +188,16 @@ public class GameState {
 				running = false;
 			}
 
-			player.update(dt, canvas);
+			player.update(dt, canvasDimension);
 
 			moveGhosts();
 
-			updateLevel(dt, canvas);
-			updateGhosts(dt, canvas);
+			updateLevel(dt, canvasDimension);
+			updateGhosts(dt, canvasDimension);
 
 			ghostMovementCounter += dt;
 		} else {
-			player.update(dt, canvas);
+			player.update(dt, canvasDimension);
 		}
 	}
 

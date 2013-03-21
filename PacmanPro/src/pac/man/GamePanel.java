@@ -13,6 +13,7 @@ import pac.man.model.Level;
 import pac.man.model.Player;
 import pac.man.util.Animation;
 import pac.man.util.DimensionF;
+import pac.man.util.DimensionI;
 import pac.man.util.MathVector;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -253,8 +254,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 				getHeight() - 20, paint);
 	}
 
-	public void update(long dt, Canvas canvas) {
-		gameState.update(dt, canvas);
+	public void update(long dt, DimensionI canvasDimension) {
+		gameState.update(dt, canvasDimension);
 
 		if (gameState.playerWon()) {
 			levelCounter = (levelCounter + 1) % levels.length;

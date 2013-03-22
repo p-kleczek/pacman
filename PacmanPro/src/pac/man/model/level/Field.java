@@ -13,19 +13,11 @@ import android.graphics.Rect;
 public abstract class Field implements Drawable {
 
 	protected final Rect rect = new Rect();
-	protected static CollisionHandler collisionHandler;
-	protected static CollisionCallback collisionCallback;
 
-	protected Field(Point position, int blockSize, CollisionHandler collisionHandlerArg,
-			CollisionCallback collisionCallbackArg) {
-		assert collisionCallbackArg != null;
-		assert collisionHandlerArg != null;
+	protected Field(Point position, int blockSize) {
 
 		rect.set(position.x * blockSize, position.y * blockSize, (position.x + 1) * blockSize,
 				(position.y + 1) * blockSize);		
-		
-		collisionHandler = collisionHandlerArg;
-		collisionCallback = collisionCallbackArg;
 	}
 
 	public Rect getRect() {
@@ -34,5 +26,6 @@ public abstract class Field implements Drawable {
 
 	public abstract void handleCollision(long timeInterval,
 			Dimension canvasDimension, Character character,
-			Iterator<Field> iterator);
+			Iterator<Field> iterator, CollisionHandler collisionHandler,
+			CollisionCallback collisionCallback);
 }

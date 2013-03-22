@@ -20,7 +20,7 @@ public abstract class Character implements Drawable {
 
 	private final Map<AnimationType, AnimationExecutor> animations;
 
-	private final Rect boundingRect;
+	private final Rect boundingRect = new Rect();
 
 	private AnimationType currentAnimation = AnimationType.IDLE;
 	private MovementAlgorithm movementAlgorithm;
@@ -47,10 +47,6 @@ public abstract class Character implements Drawable {
 		for (AnimationType t : animationMapping.keySet()) {
 			animations.put(t, new AnimationExecutor(animationMapping.get(t)));
 		}
-
-		boundingRect = new Rect((int) position.x, (int) position.y,
-				(int) (position.x + size.width),
-				(int) (position.y + size.height));
 	}
 
 	private void computeCurrentAnimationType() {

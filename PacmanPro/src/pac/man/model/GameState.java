@@ -29,7 +29,7 @@ public class GameState {
 	public static final int GOLD_VALUE = 10;
 	public static final int POWER_VALUE = 25;
 	public static final int GHOST_VALUE = 100;
-	public static final int POWERUP_DURATION = 6000;
+	public static final int POWERUP_DURATION = 5000;
 	public static final int POWERUP_THRESHOLD = 750;
 	public static final int GHOST_MOVE_INTERVAL = 175;
 
@@ -147,13 +147,8 @@ public class GameState {
 	private void handleInteractions() {
 		Rect playerBoundary = player.getBoundingRect();
 		Rect ghostBoundary;
-		Ghost ghost;
 
-		int nActiveGhosts = Math.min(activeGhosts.size(), numOpponents);
-
-		for (int i = 0; i < nActiveGhosts; i++) {
-			ghost = activeGhosts.get(i);
-
+		for (Ghost ghost : activeGhosts) {
 			if (!ghost.isAlive())
 				continue;
 
@@ -287,8 +282,9 @@ public class GameState {
 	private void setPowerupMode() {
 		gameMode = GameMode.POWER_UP;
 
-		player.setMovementAlgorithm(new InertialMovement(player.getSpeed(),
-				23.0));
+		// XXX : na czas debugowania
+//		player.setMovementAlgorithm(new InertialMovement(player.getSpeed(),
+//				23.0));
 		player.setSpecial(true);
 
 		for (Ghost ghost : activeGhosts) {

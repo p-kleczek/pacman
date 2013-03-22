@@ -16,10 +16,8 @@ public class GoldSpawn extends Field {
 	private static AnimationExecutor animationExecutor = new AnimationExecutor(
 			R.drawable.gold);
 
-	protected GoldSpawn(Point position, int blockSize,
-			CollisionHandler collisionHandlerArg,
-			CollisionCallback collisionCallbackArg) {
-		super(position, blockSize, collisionHandlerArg, collisionCallbackArg);
+	protected GoldSpawn(Point position, int blockSize) {
+		super(position, blockSize);
 		scaleBoundaryBox();
 	}
 
@@ -42,7 +40,9 @@ public class GoldSpawn extends Field {
 
 	@Override
 	public void handleCollision(long timeInterval, Dimension canvasDimension,
-			Character character, Iterator<Field> iterator) {
+			Character character, Iterator<Field> iterator,
+			CollisionHandler collisionHandler,
+			CollisionCallback collisionCallback) {
 
 		if (collisionCallback != null) {
 			if (collisionCallback.onGold(character)) {

@@ -22,10 +22,8 @@ public class PowerSpawn extends Field {
 	private static AnimationExecutor animationExecutor = new AnimationExecutor(
 			R.drawable.cherry);
 
-	protected PowerSpawn(Point position, int blockSize,
-			CollisionHandler collisionHandlerArg,
-			CollisionCallback collisionCallbackArg) {
-		super(position, blockSize, collisionHandlerArg, collisionCallbackArg);
+	protected PowerSpawn(Point position, int blockSize) {
+		super(position, blockSize);
 	}
 
 	@Override
@@ -36,7 +34,9 @@ public class PowerSpawn extends Field {
 
 	@Override
 	public void handleCollision(long timeInterval, Dimension canvasDimension,
-			Character character, Iterator<Field> iterator) {
+			Character character, Iterator<Field> iterator,
+			CollisionHandler collisionHandler,
+			CollisionCallback collisionCallback) {
 		if (collisionCallback != null) {
 			if (collisionCallback.onPowerup(character)) {
 				iterator.remove();

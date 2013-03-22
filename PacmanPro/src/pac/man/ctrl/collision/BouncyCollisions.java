@@ -8,6 +8,9 @@ import android.graphics.Rect;
 public class BouncyCollisions implements CollisionHandler {
 	public void handle(long timeInterval, Dimension canvasDimension, Rect objectBoundary, Character character) {
 		MathVector speed = character.getSpeed();
+		
+		// XXX : modyfikacje na czas debugowania
+		
 		speed.scale(-1.0);	// reverse speed
 
 		character.setSpeed(speed);

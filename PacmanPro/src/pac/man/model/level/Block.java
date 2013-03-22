@@ -20,9 +20,8 @@ public class Block extends Field {
 		paint.setStyle(Paint.Style.FILL);
 	}
 
-	protected Block(Point position, int blockSize, CollisionHandler collisionHandler,
-			CollisionCallback collisionCallback) {
-		super(position, blockSize, collisionHandler, collisionCallback);
+	protected Block(Point position, int blockSize) {
+		super(position, blockSize);
 	}
 
 	@Override
@@ -32,7 +31,9 @@ public class Block extends Field {
 
 	@Override
 	public void handleCollision(long timeInterval, Dimension canvasDimension,
-			Character character, Iterator<Field> iterator) {
+			Character character, Iterator<Field> iterator,
+			CollisionHandler collisionHandler,
+			CollisionCallback collisionCallback) {
 		collisionHandler.handle(timeInterval, canvasDimension, rect, character);
 
 		if (collisionCallback != null) {
@@ -40,6 +41,7 @@ public class Block extends Field {
 				iterator.remove();
 			}
 		}
+	
 	}
 
 }

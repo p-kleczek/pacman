@@ -105,8 +105,7 @@ public class Level implements Drawable {
 
 					switch (fieldType) {
 					case WALL:
-						collidableFields.add(new Block(pos, blockSize,
-								collisionHandler, collisionCallback));
+						collidableFields.add(new Block(pos, blockSize));
 						break;
 					case ENEMY_SPAWN:
 						enemySpawns.add(r);
@@ -115,12 +114,10 @@ public class Level implements Drawable {
 						playerSpawns.add(r);
 						break;
 					case POWER_SPAWN:
-						collidableFields.add(new PowerSpawn(pos, blockSize,
-								collisionHandler, collisionCallback));
+						collidableFields.add(new PowerSpawn(pos, blockSize));
 						break;
 					case GOLD_SPAWN:
-						collidableFields.add(new GoldSpawn(pos, blockSize,
-								collisionHandler, collisionCallback));
+						collidableFields.add(new GoldSpawn(pos, blockSize));
 						break;
 					}
 				} catch (Exception e) {
@@ -138,7 +135,7 @@ public class Level implements Drawable {
 			Field field = iterator.next();
 			if (Rect.intersects(character.getBoundingRect(), field.getRect())) {
 				field.handleCollision(timeInterval, canvasDimension, character,
-						iterator);
+						iterator, collisionHandler, collisionCallback);
 				break;
 			}
 		}

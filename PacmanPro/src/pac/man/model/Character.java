@@ -6,8 +6,7 @@ import java.util.Map;
 import pac.man.ctrl.movement.Direction;
 import pac.man.ctrl.movement.MovementAlgorithm;
 import pac.man.util.AnimationExecutor;
-import pac.man.util.DimensionF;
-import pac.man.util.DimensionI;
+import pac.man.util.Dimension;
 import pac.man.util.MathVector;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -26,7 +25,7 @@ public abstract class Character implements Drawable {
 	private AnimationType currentAnimation = AnimationType.IDLE;
 	private MovementAlgorithm movementAlgorithm;
 	private final MathVector position;
-	private final DimensionF size;
+	private final Dimension size;
 
 	/**
 	 * Special behaviour mode.
@@ -39,7 +38,7 @@ public abstract class Character implements Drawable {
 		DEATH, DOWN, IDLE, LEFT, RIGHT, SPECIAL, UP
 	}
 
-	public Character(DimensionF size, MathVector position,
+	public Character(Dimension size, MathVector position,
 			Map<AnimationType, Integer> animationMapping) {
 		this.position = position;
 		this.size = size;
@@ -103,7 +102,7 @@ public abstract class Character implements Drawable {
 		return position;
 	}
 
-	public DimensionF getSize() {
+	public Dimension getSize() {
 		return size;
 	}
 
@@ -143,7 +142,7 @@ public abstract class Character implements Drawable {
 		this.speed.set(speed);
 	}
 
-	private void updatePosition(long timeInterval, DimensionI canvasSize) {
+	private void updatePosition(long timeInterval, Dimension canvasSize) {
 		final double factor = (isSpecial() ? SPEEDUP_FACTOR : 1.0) / 1000.0;
 
 		position.x += factor * speed.x * timeInterval;
@@ -163,7 +162,7 @@ public abstract class Character implements Drawable {
 		}
 	}
 
-	private void updateBoundingRect(DimensionI canvasSize) {
+	private void updateBoundingRect(Dimension canvasSize) {
 		boundingRect.left = (int) position.x;
 		boundingRect.right = (int) (position.x + size.width);
 		boundingRect.top = (int) (position.y);
@@ -174,7 +173,7 @@ public abstract class Character implements Drawable {
 		animations.get(currentAnimation).update(dt);
 	}
 
-	public void update(long timeInterval, DimensionI canvasSize) {
+	public void update(long timeInterval, Dimension canvasSize) {
 		updatePosition(timeInterval, canvasSize);
 		updateBoundingRect(canvasSize);
 		updateAnimation(timeInterval);

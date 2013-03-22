@@ -1,12 +1,12 @@
 package pac.man.ctrl.collision;
 
 import pac.man.model.Character;
-import pac.man.util.DimensionI;
+import pac.man.util.Dimension;
 import pac.man.util.MathVector;
 import android.graphics.Rect;
 
 public class BouncyCollisions implements CollisionHandler {
-	public void handle(long dt, DimensionI canvasDimension, Rect rect, Character c) {
+	public void handle(long dt, Dimension canvasDimension, Rect rect, Character c) {
 		MathVector speed = c.getSpeed();
 		speed.scale(-1.0);
 

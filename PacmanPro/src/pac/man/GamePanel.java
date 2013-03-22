@@ -2,18 +2,15 @@ package pac.man;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import pac.man.model.Character;
 import pac.man.model.Character.AnimationType;
+import pac.man.model.level.Level;
 import pac.man.model.GameState;
-import pac.man.model.Ghost;
-import pac.man.model.Level;
 import pac.man.model.Player;
 import pac.man.util.Animation;
-import pac.man.util.DimensionF;
-import pac.man.util.DimensionI;
+import pac.man.util.Dimension;
 import pac.man.util.MathVector;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -148,7 +145,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 		Integer sampleId = animations.values().iterator().next();
 		Animation samplePlayerAnimationFrame = ResourceManager
 				.getAnimation(sampleId);
-		DimensionF playerSize = new DimensionF(
+		Dimension playerSize = new Dimension(
 				samplePlayerAnimationFrame.getFrameDimension().width,
 				samplePlayerAnimationFrame.getFrameDimension().height);
 
@@ -218,7 +215,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 		if (thread.isRunning() && isMouseAction) {
 			final MathVector ppos = player.getPosition();
-			final DimensionF psize = player.getSize();
+			final Dimension psize = player.getSize();
 			final MathVector touch = new MathVector(event.getX(), event.getY());
 
 			final MathVector direction = new MathVector(touch.x - ppos.x
@@ -254,7 +251,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 				getHeight() - 20, paint);
 	}
 
-	public void update(long dt, DimensionI canvasDimension) {
+	public void update(long dt, Dimension canvasDimension) {
 		gameState.update(dt, canvasDimension);
 
 		if (gameState.playerWon()) {

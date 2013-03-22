@@ -14,10 +14,10 @@ import pac.man.ctrl.movement.NonrestrictiveMovement;
 import pac.man.ctrl.movement.Strict4WayMovement;
 import pac.man.ctrl.strategy.RandomStrategy;
 import pac.man.ctrl.strategy.SimpleChaseStrategy;
-import pac.man.model.Level.CollisionCallback;
+import pac.man.model.level.Level;
+import pac.man.model.level.Level.CollisionCallback;
 import pac.man.util.Animation;
-import pac.man.util.DimensionF;
-import pac.man.util.DimensionI;
+import pac.man.util.Dimension;
 import pac.man.util.MathVector;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -31,6 +31,35 @@ public class GameState {
 	public static final int POWERUP_DURATION = 6000;
 	public static final int POWERUP_THRESHOLD = 750;
 	public static final int GHOST_MOVE_INTERVAL = 175;
+	
+	private final CollisionCallback collisionCallback = new CollisionCallback() {
+		public boolean onWall(Character who) {
+			if (who == player && gameMode != GameMode.NORMAL) {
+				ResourceManager.playSound(context, R.raw.coin);
+				return true;
+			}
+			return false;
+		}
+
+		public boolean onPowerup(Character who) {
+			if (who == player) {
+				ResourceManager.playSound(context, R.raw.pacman_eatfruit);
+				score += POWER_VALUE;
+				setPowerupMode();
+				return true;
+			}
+			return false;
+		}
+
+		public boolean onGold(Character who) {
+			if (who == player) {
+				score += GOLD_VALUE;
+				ResourceManager.playSound(context, R.raw.pacman_chomp);
+				return true;
+			}
+			return false;
+		}
+	};
 
 	private static enum GameMode {
 		NORMAL, POWER_UP
@@ -65,7 +94,7 @@ public class GameState {
 		Integer sampleId = ghosts.get(0).values().iterator().next();
 		Animation sampleGhostAnimationFrame = ResourceManager
 				.getAnimation(sampleId);
-		DimensionF ghostSize = new DimensionF(
+		Dimension ghostSize = new Dimension(
 				sampleGhostAnimationFrame.getFrameDimension().width,
 				sampleGhostAnimationFrame.getFrameDimension().height);
 
@@ -158,20 +187,20 @@ public class GameState {
 
 	}
 
-	private void updateLevel(long dt, DimensionI canvasDimension) {
+	private void updateLevel(long dt, Dimension canvasDimension) {
 		level.update(dt, canvasDimension, player);
 		for (int i = 0; i < getActualGhostNumber(); ++i) {
 			level.update(dt, canvasDimension, ghosts.get(i));
 		}
 	}
 
-	private void updateGhosts(long dt, DimensionI canvasDimension) {
+	private void updateGhosts(long dt, Dimension canvasDimension) {
 		for (int i = 0; i < getActualGhostNumber(); ++i) {
 			ghosts.get(i).update(dt, canvasDimension);
 		}
 	}
 
-	public void update(long dt, DimensionI canvasDimension) {
+	public void update(long dt, Dimension canvasDimension) {
 		modeCounter -= dt;
 
 		if (gameMode != GameMode.NORMAL && modeCounter <= 0) {
@@ -274,6 +303,9 @@ public class GameState {
 	}
 
 	public void restartLevel() {
+		level.setCollisionCallback(collisionCallback);
+		level.init();
+		
 		resetLevel();
 
 		running = true;
@@ -281,49 +313,19 @@ public class GameState {
 		lives = STARTING_LIVES;
 		score = 0;
 
-		player.setSpeed(new MathVector(0, 0));
+		player.setSpeed(new MathVector());
 
 		for (Ghost ghost : ghosts) {
-			ghost.setPosition(level.randomEnemySpawn());
+			ghost.setPosition(level.getRandomEnemySpawnPosition());
 		}
 
 		for (Ghost ghost : ghosts) {
-			ghost.setPosition(level.randomEnemySpawn());
+			ghost.setPosition(level.getRandomEnemySpawnPosition());
 		}
-
-		level.init();
-		level.setCollisionCallback(new CollisionCallback() {
-			public boolean onWall(Character who) {
-				if (who == player && gameMode != GameMode.NORMAL) {
-					ResourceManager.playSound(context, R.raw.coin);
-					return true;
-				}
-				return false;
-			}
-
-			public boolean onPowerup(Character who) {
-				if (who == player) {
-					ResourceManager.playSound(context, R.raw.pacman_eatfruit);
-					score += POWER_VALUE;
-					setPowerupMode();
-					return true;
-				}
-				return false;
-			}
-
-			public boolean onGold(Character who) {
-				if (who == player) {
-					score += GOLD_VALUE;
-					ResourceManager.playSound(context, R.raw.pacman_chomp);
-					return true;
-				}
-				return false;
-			}
-		});
 	}
 
 	public void resetLevel() {
-		player.setPosition(level.randomPlayerSpawn());
+		player.setPosition(level.getRandomPlayerSpawnPosition());
 		player.setAlive(true);
 		player.setSpecial(false);
 

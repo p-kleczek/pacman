@@ -6,17 +6,17 @@ public class Animation {
 	private final Bitmap bitmap;
 	private final int numFrames;
 	private final int framePeriod;
-	private final DimensionI frameDimension;
+	private final Dimension frameDimension;
 
 	public Animation(final Bitmap bitmap, final int numFrames, final int period) {
 		this.bitmap = bitmap;
 		this.numFrames = numFrames;
 		this.framePeriod = period / numFrames;
 
-		frameDimension = new DimensionI(bitmap.getWidth() / numFrames, bitmap.getHeight());
+		frameDimension = new Dimension(bitmap.getWidth() / numFrames, bitmap.getHeight());
 	}
 
-	public DimensionI getFrameDimension() {
+	public Dimension getFrameDimension() {
 		return frameDimension;
 	}
 	

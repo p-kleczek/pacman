@@ -1,6 +1,7 @@
 package pac.man.ctrl.strategy;
 
 import java.util.Random;
+
 import pac.man.util.MathVector;
 
 public class RandomStrategy extends MovementStrategy {

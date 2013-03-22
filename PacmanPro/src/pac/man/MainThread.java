@@ -1,6 +1,6 @@
 package pac.man;
 
-import pac.man.util.DimensionI;
+import pac.man.util.Dimension;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
@@ -34,7 +34,7 @@ public class MainThread extends Thread {
 			canvas = null;
 			try {
 				canvas = this.surfaceHolder.lockCanvas();
-				DimensionI canvasDimension = new DimensionI(canvas.getWidth(), canvas.getHeight());
+				Dimension canvasDimension = new Dimension(canvas.getWidth(), canvas.getHeight());
 				synchronized (surfaceHolder) {
 					gamePanel.update(TIME_DELTA, canvasDimension);
 					gamePanel.draw(canvas);

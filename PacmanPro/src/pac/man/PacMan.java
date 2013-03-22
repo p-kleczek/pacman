@@ -1,32 +1,27 @@
 package pac.man;
 
+import pac.man.ctrl.movement.Speed;
+import pac.man.model.GameState;
+import pac.man.model.Player;
+import pac.man.util.MathVector;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
+import android.media.AudioManager;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-
-import android.app.Activity;
-import android.media.AudioManager;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
-
-import pac.man.ctrl.movement.MovementAlgorithm;
-import pac.man.ctrl.movement.Speed;
-import pac.man.model.GameState;
-import pac.man.model.Player;
-import pac.man.util.MathVector;
 
 public class PacMan extends Activity implements SensorEventListener {
 

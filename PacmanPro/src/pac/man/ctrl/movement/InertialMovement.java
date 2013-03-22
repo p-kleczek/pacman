@@ -2,8 +2,6 @@ package pac.man.ctrl.movement;
 
 import pac.man.PacMan;
 import pac.man.util.MathVector;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 public class InertialMovement extends MovementAlgorithm {
 	private MathVector speed;

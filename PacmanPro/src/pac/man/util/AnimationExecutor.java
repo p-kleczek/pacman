@@ -40,7 +40,7 @@ public class AnimationExecutor {
 		canvas.drawBitmap(animation.getBitmap(), sourceRect, destRect, null);
 	}
 
-	public DimensionI getFrameDimension() {
+	public Dimension getFrameDimension() {
 		return animation.getFrameDimension();
 	}
 }

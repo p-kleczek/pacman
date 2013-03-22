@@ -3,11 +3,11 @@ package pac.man.model;
 import java.util.Map;
 
 import pac.man.ctrl.movement.NonrestrictiveMovement;
-import pac.man.util.DimensionF;
+import pac.man.util.Dimension;
 import pac.man.util.MathVector;
 
 public class Player extends Character {
-	public Player(DimensionF size, MathVector position,
+	public Player(Dimension size, MathVector position,
 			Map<AnimationType, Integer> animationMapping) {
 
 		super(size, position, animationMapping);

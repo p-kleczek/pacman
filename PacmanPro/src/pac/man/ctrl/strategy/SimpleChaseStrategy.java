@@ -2,7 +2,6 @@ package pac.man.ctrl.strategy;
 
 import pac.man.model.Player;
 import pac.man.util.MathVector;
-import pac.man.ctrl.strategy.RandomStrategy;
 
 public class SimpleChaseStrategy extends RandomStrategy {
 	private Player player;

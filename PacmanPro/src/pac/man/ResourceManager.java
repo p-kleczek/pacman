@@ -1,8 +1,8 @@
 package pac.man;
 
-import pac.man.model.Level;
+import pac.man.model.level.Level;
 import pac.man.util.Animation;
-import pac.man.util.DimensionI;
+import pac.man.util.Dimension;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -32,14 +32,14 @@ public class ResourceManager {
 
 	public static Level getLevel(View view, int id) {
 		return new Level(BitmapFactory.decodeResource(view.getResources(), id),
-				new DimensionI(view.getWidth(), view.getHeight()));
+				new Dimension(view.getWidth(), view.getHeight()));
 	}
 
 	public static void loadAnimation(View view, int id, int frames, int duration) {
-		animations.put(
-				Integer.valueOf(id),
-				new Animation(BitmapFactory.decodeResource(view.getResources(),
-						id), frames, duration));
+		Animation animation = new Animation(BitmapFactory.decodeResource(
+				view.getResources(), id), frames, duration);
+		Integer key = Integer.valueOf(id);
+		animations.put(key, animation);
 	}
 
 	public static Animation getAnimation(Integer id) {

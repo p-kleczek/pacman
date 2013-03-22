@@ -36,7 +36,7 @@ public class PacMan extends Activity implements SensorEventListener {
 
 	private static Speed preferredSpeed;
 	public static int pNOps = -1;
-	
+
 	public static Speed getSpeed() {
 		return preferredSpeed;
 	}
@@ -140,7 +140,7 @@ public class PacMan extends Activity implements SensorEventListener {
 		gamePanel = new GamePanel(this);
 		setContentView(gamePanel);
 
-		// Set the hardware buttons to control the music
+		// Set the hardware buttons to control the music.
 		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
 		mInitialized = false;
@@ -155,19 +155,7 @@ public class PacMan extends Activity implements SensorEventListener {
 		return instance;
 	}
 
-	// @Override
-	// protected void onDestroy() {
-	// super.onDestroy();
-	//
-	// boolean retry = true;
-	// while (retry) {
-	// try {
-	// gamePanel.getThread().join();
-	// retry = false;
-	// } catch (InterruptedException e) {
-	// }
-	// }
-	// }
+	// TODO : implement onDestroy() functionality
 
 	@Override
 	protected void onResume() {
@@ -210,7 +198,6 @@ public class PacMan extends Activity implements SensorEventListener {
 			if (deltaX > RESTART_ACCELERATION_THRESHOLD
 					|| deltaY > RESTART_ACCELERATION_THRESHOLD) {
 				gamePanel.restartLevel();
-				// gamePanel.getThread().setRunning(!gamePanel.getThread().getRunning());
 			}
 
 			mLastX = x;
@@ -222,7 +209,6 @@ public class PacMan extends Activity implements SensorEventListener {
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			// if (gamePanel.getThread().is)
 			gamePanel.getThread().setRunning(false);
 		}
 

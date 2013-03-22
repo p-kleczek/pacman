@@ -5,7 +5,6 @@ import java.util.Iterator;
 import pac.man.R;
 import pac.man.ctrl.collision.CollisionHandler;
 import pac.man.model.Character;
-import pac.man.model.Player;
 import pac.man.model.level.Level.CollisionCallback;
 import pac.man.util.AnimationExecutor;
 import pac.man.util.Dimension;
@@ -21,12 +20,19 @@ public class GoldSpawn extends Field {
 			CollisionHandler collisionHandlerArg,
 			CollisionCallback collisionCallbackArg) {
 		super(position, blockSize, collisionHandlerArg, collisionCallbackArg);
+		scaleBoundaryBox();
+	}
 
+	private void scaleBoundaryBox() {
 		final double BOUNDARY_BOX_SCALE_FACTOR = 0.3;
-		rect.left += animationExecutor.getFrameDimension().width * BOUNDARY_BOX_SCALE_FACTOR;
-		rect.right -= animationExecutor.getFrameDimension().width * BOUNDARY_BOX_SCALE_FACTOR;
-		rect.top += animationExecutor.getFrameDimension().height * BOUNDARY_BOX_SCALE_FACTOR;
-		rect.bottom -= animationExecutor.getFrameDimension().height * BOUNDARY_BOX_SCALE_FACTOR;
+		rect.left += animationExecutor.getFrameDimension().width
+				* BOUNDARY_BOX_SCALE_FACTOR;
+		rect.right -= animationExecutor.getFrameDimension().width
+				* BOUNDARY_BOX_SCALE_FACTOR;
+		rect.top += animationExecutor.getFrameDimension().height
+				* BOUNDARY_BOX_SCALE_FACTOR;
+		rect.bottom -= animationExecutor.getFrameDimension().height
+				* BOUNDARY_BOX_SCALE_FACTOR;
 	}
 
 	@Override
@@ -37,7 +43,7 @@ public class GoldSpawn extends Field {
 	@Override
 	public void handleCollision(long timeInterval, Dimension canvasDimension,
 			Character character, Iterator<Field> iterator) {
-		
+
 		if (collisionCallback != null) {
 			if (collisionCallback.onGold(character)) {
 				iterator.remove();

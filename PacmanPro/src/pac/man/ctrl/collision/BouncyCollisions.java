@@ -6,24 +6,20 @@ import pac.man.util.MathVector;
 import android.graphics.Rect;
 
 public class BouncyCollisions implements CollisionHandler {
-	public void handle(long dt, Dimension canvasDimension, Rect rect, Character c) {
-		MathVector speed = c.getSpeed();
-		speed.scale(-1.0);
+	public void handle(long timeInterval, Dimension canvasDimension, Rect objectBoundary, Character character) {
+		MathVector speed = character.getSpeed();
+		speed.scale(-1.0);	// reverse speed
 
-		c.setSpeed(speed);
-		Rect b;
+		character.setSpeed(speed);
 
 		do {
-			c.update(dt, canvasDimension); // reverse for a while
-			b = c.getBoundingRect();
-		} while (Rect.intersects(b, rect));
+			character.update(timeInterval, canvasDimension); // reverse for a while
+		} while (Rect.intersects(character.getBoundingRect(), objectBoundary));
 
 		speed.scale(-1.0);
 
 		// TODO Compute the angle dependantly on movement direction.
-		double angle = 180;
-
-		speed.rotate(angle);
-		c.setSpeed(speed);
+		speed.rotate(180);
+		character.setSpeed(speed);
 	}
 }

@@ -87,10 +87,15 @@ public abstract class Character implements Drawable {
 	public void draw(final Canvas canvas) {
 		computeCurrentAnimationType();
 		AnimationExecutor animation = animations.get(currentAnimation);
-		animation.draw(boundingRect, canvas);
+		animation.draw(getBoundingRect(), canvas);
 	}
 
 	public Rect getBoundingRect() {
+		boundingRect.left = (int) position.x;
+		boundingRect.right = (int) (position.x + size.width);
+		boundingRect.top = (int) (position.y);
+		boundingRect.bottom = (int) (position.y + size.height);
+
 		return boundingRect;
 	}
 
@@ -162,20 +167,12 @@ public abstract class Character implements Drawable {
 		}
 	}
 
-	private void updateBoundingRect(Dimension canvasSize) {
-		boundingRect.left = (int) position.x;
-		boundingRect.right = (int) (position.x + size.width);
-		boundingRect.top = (int) (position.y);
-		boundingRect.bottom = (int) (position.y + size.height);
-	}
-
 	private void updateAnimation(long dt) {
 		animations.get(currentAnimation).update(dt);
 	}
 
 	public void update(long timeInterval, Dimension canvasSize) {
 		updatePosition(timeInterval, canvasSize);
-		updateBoundingRect(canvasSize);
 		updateAnimation(timeInterval);
 	}
 

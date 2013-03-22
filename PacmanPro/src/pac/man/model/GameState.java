@@ -1,6 +1,7 @@
 package pac.man.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +25,16 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 
 public class GameState {
-	public static final int STARTING_LIVES = 3;
+	public static final int STARTING_LIVES_NUMBER = 3;
 	public static final int GOLD_VALUE = 10;
 	public static final int POWER_VALUE = 25;
 	public static final int GHOST_VALUE = 100;
 	public static final int POWERUP_DURATION = 6000;
 	public static final int POWERUP_THRESHOLD = 750;
 	public static final int GHOST_MOVE_INTERVAL = 175;
-	
+
+	private static final double SLOW_SPEED_FACTOR = 0.5;
+
 	private final CollisionCallback collisionCallback = new CollisionCallback() {
 		public boolean onWall(Character who) {
 			if (who == player && gameMode != GameMode.NORMAL) {
@@ -74,11 +77,18 @@ public class GameState {
 
 	private Level level;
 	private Player player;
-	private final List<Ghost> ghosts = new ArrayList<Ghost>();
+	private final List<Ghost> activeGhosts = new ArrayList<Ghost>();
+	
+	// Ghost not currently used due to selected preferences.
+	private final List<Ghost> ghostRepo = new ArrayList<Ghost>();
 
-	private long ghostMovementCounter;
-	private long modeCounter;
-	private long thresholdCounter;
+	/**
+	 * Measures the total time of the game.
+	 */
+	private long globalTimer;
+
+	private long modeTimer;
+
 	private GameMode gameMode = GameMode.NORMAL;
 
 	public GameState(Player player, Level level,
@@ -89,8 +99,6 @@ public class GameState {
 		this.level = level;
 		this.player = player;
 
-		int size = ghosts.size();
-
 		Integer sampleId = ghosts.get(0).values().iterator().next();
 		Animation sampleGhostAnimationFrame = ResourceManager
 				.getAnimation(sampleId);
@@ -98,8 +106,8 @@ public class GameState {
 				sampleGhostAnimationFrame.getFrameDimension().width,
 				sampleGhostAnimationFrame.getFrameDimension().height);
 
-		for (int i = 0; i < size; ++i) {
-			this.ghosts.add(new Ghost(ghostSize, new MathVector(-100, 0),
+		for (int i = 0; i < ghosts.size(); ++i) {
+			this.activeGhosts.add(new Ghost(ghostSize, new MathVector(-100, 0),
 					ghosts.get(i)));
 		}
 
@@ -108,11 +116,10 @@ public class GameState {
 
 	private void handleSpecialInteraction(Ghost ghost) {
 		ghost.setAlive(false);
-		ghost.setSpeed(new MathVector(0, 0));
+		ghost.setSpeed(new MathVector());
 		ghost.setMovementStrategy(new RandomStrategy());
 
-		// Slow the ghost.
-		ghost.setMovementAlgorithm(new Strict4WayMovement(0.5));
+		ghost.setMovementAlgorithm(new Strict4WayMovement(SLOW_SPEED_FACTOR));
 
 		score += GHOST_VALUE;
 
@@ -126,11 +133,11 @@ public class GameState {
 
 		if (lives <= 0) {
 			player.setAlive(false);
-			player.setSpeed(new MathVector(0, 0));
+			player.setSpeed(new MathVector());
 			running = false;
 			ResourceManager.playSound(context, R.raw.pacman_death);
 		} else {
-			resetLevel();
+			resetCharactersAndMode();
 		}
 	}
 
@@ -140,70 +147,67 @@ public class GameState {
 	private void handleInteractions() {
 		Rect playerBoundary = player.getBoundingRect();
 		Rect ghostBoundary;
-		boolean special = player.isSpecial();
+		Ghost ghost;
 
-		int nActiveGhosts = Math.min(ghosts.size(), numOpponents);
+		int nActiveGhosts = Math.min(activeGhosts.size(), numOpponents);
 
-		for (int i = 0; i < nActiveGhosts; ++i) {
-			Ghost ghost = ghosts.get(i);
+		for (int i = 0; i < nActiveGhosts; i++) {
+			ghost = activeGhosts.get(i);
+
 			if (!ghost.isAlive())
 				continue;
 
 			ghostBoundary = ghost.getBoundingRect();
 
 			if (Rect.intersects(playerBoundary, ghostBoundary)) {
-				if (special) {
+				if (player.isSpecial()) {
 					handleSpecialInteraction(ghost);
 				} else {
 					handleNormalInteraction();
 				}
-				// XXX: mozna usunac?
-				// break;
+
+				break;
 			}
 		}
-	}
-
-	private int getActualGhostNumber() {
-		return Math.min(ghosts.size(), numOpponents);
 	}
 
 	/**
 	 * @return <code>true</code> if at least one ghost is alive
 	 */
 	private boolean isGhostAlive() {
-		for (int i = 0; i < getActualGhostNumber(); ++i) {
-			if (ghosts.get(i).isAlive())
+		for (Ghost g : activeGhosts) {
+			if (g.isAlive())
 				return true;
 		}
 		return false;
 	}
 
 	private void moveGhosts() {
-		for (int i = 0; i < getActualGhostNumber(); ++i) {
-			if (ghostMovementCounter % GHOST_MOVE_INTERVAL == 0) {
-				ghosts.get(i).handleMove();
+		for (Ghost g : activeGhosts) {
+			if (globalTimer % GHOST_MOVE_INTERVAL == 0) {
+				g.handleMove();
 			}
 		}
 
 	}
 
-	private void updateLevel(long dt, Dimension canvasDimension) {
-		level.update(dt, canvasDimension, player);
-		for (int i = 0; i < getActualGhostNumber(); ++i) {
-			level.update(dt, canvasDimension, ghosts.get(i));
+	private void updateLevel(long timeInterval, Dimension canvasDimension) {
+		level.update(timeInterval, canvasDimension, player);
+		for (Ghost ghost : activeGhosts) {
+			level.update(timeInterval, canvasDimension, ghost);
 		}
 	}
 
-	private void updateGhosts(long dt, Dimension canvasDimension) {
-		for (int i = 0; i < getActualGhostNumber(); ++i) {
-			ghosts.get(i).update(dt, canvasDimension);
+	private void updateGhosts(long timeInterval, Dimension canvasDimension) {
+		for (Ghost g : activeGhosts) {
+			g.update(timeInterval, canvasDimension);
 		}
 	}
 
-	public void update(long dt, Dimension canvasDimension) {
-		modeCounter -= dt;
+	public void update(long timeInterval, Dimension canvasDimension) {
+		modeTimer -= timeInterval;
 
-		if (gameMode != GameMode.NORMAL && modeCounter <= 0) {
+		if (gameMode != GameMode.NORMAL && modeTimer <= 0) {
 			setNormalMode();
 		}
 
@@ -212,36 +216,32 @@ public class GameState {
 
 			if (level.getTotalGold() == 0 && gameMode == GameMode.NORMAL) {
 				setPowerupMode();
-				modeCounter = Long.MAX_VALUE; // Infinite powerup mode!
+				modeTimer = Long.MAX_VALUE; // Infinite powerup mode!
 			} else if (!isGhostAlive()) {
 				running = false;
 			}
 
-			player.update(dt, canvasDimension);
+			player.update(timeInterval, canvasDimension);
 
 			moveGhosts();
 
-			updateLevel(dt, canvasDimension);
-			updateGhosts(dt, canvasDimension);
+			updateLevel(timeInterval, canvasDimension);
+			updateGhosts(timeInterval, canvasDimension);
 
-			ghostMovementCounter += dt;
+			globalTimer += timeInterval;
 		} else {
-			player.update(dt, canvasDimension);
+			player.update(timeInterval, canvasDimension);
 		}
 	}
 
 	public void draw(Canvas canvas) {
 		level.draw(canvas);
 
-		// XXX: wtf z "thresholdCounter"?
-
-		if (gameMode == GameMode.NORMAL || (modeCounter > POWERUP_THRESHOLD)
-				|| (thresholdCounter % 6 < 3)) {
-			for (int i = 0; i < getActualGhostNumber(); ++i) {
-				ghosts.get(i).draw(canvas);
+		if (gameMode == GameMode.NORMAL || modeTimer > POWERUP_THRESHOLD) {
+			for (Ghost g : activeGhosts) {
+				g.draw(canvas);
 			}
 		}
-		thresholdCounter++;
 
 		player.draw(canvas);
 	}
@@ -260,6 +260,8 @@ public class GameState {
 
 	public void setLevel(Level l) {
 		this.level = l;
+
+		// FIXME: to nie powinno się tu znaleźc
 		restartLevel();
 	}
 
@@ -269,7 +271,7 @@ public class GameState {
 		player.setMovementAlgorithm(new Strict4WayMovement());
 		player.setSpecial(false);
 
-		for (Ghost ghost : ghosts) {
+		for (Ghost ghost : activeGhosts) {
 			if (!ghost.isAlive())
 				continue;
 
@@ -289,7 +291,7 @@ public class GameState {
 				23.0));
 		player.setSpecial(true);
 
-		for (Ghost ghost : ghosts) {
+		for (Ghost ghost : activeGhosts) {
 			ghost.setMovementAlgorithm(new NonrestrictiveMovement());
 			ghost.setMovementStrategy(new SimpleChaseStrategy(player, 150.0,
 					-1.0));
@@ -298,38 +300,31 @@ public class GameState {
 
 		level.setCollisionHandler(new BouncyCollisions());
 
-		modeCounter = POWERUP_DURATION;
+		modeTimer = POWERUP_DURATION;
 		ResourceManager.playSound(context, R.raw.pacman_intermission);
 	}
 
 	public void restartLevel() {
 		level.setCollisionCallback(collisionCallback);
-		level.init();
 		
-		resetLevel();
+		// Necessary to restore eg. eaten coins.
+		level.init();
+
+		resetCharactersAndMode();
 
 		running = true;
-		gameMode = GameMode.NORMAL;
-		lives = STARTING_LIVES;
+		lives = STARTING_LIVES_NUMBER;
 		score = 0;
-
-		player.setSpeed(new MathVector());
-
-		for (Ghost ghost : ghosts) {
-			ghost.setPosition(level.getRandomEnemySpawnPosition());
-		}
-
-		for (Ghost ghost : ghosts) {
-			ghost.setPosition(level.getRandomEnemySpawnPosition());
-		}
 	}
 
-	public void resetLevel() {
+	private void resetCharactersAndMode() {
 		player.setPosition(level.getRandomPlayerSpawnPosition());
 		player.setAlive(true);
 		player.setSpecial(false);
+		player.setSpeed(new MathVector());
 
-		for (Ghost ghost : ghosts) {
+		for (Ghost ghost : activeGhosts) {
+			ghost.setPosition(level.getRandomEnemySpawnPosition());
 			ghost.setAlive(true);
 			ghost.setSpecial(false);
 		}
@@ -359,17 +354,24 @@ public class GameState {
 
 	public void setNumOpponents(int numOpponents) {
 		this.numOpponents = numOpponents;
+		
+		if (activeGhosts.size() > numOpponents) {
+			Iterator<Ghost> iterator = activeGhosts.iterator();
+			
+			while (activeGhosts.size() > numOpponents) {
+				ghostRepo.add(iterator.next());
+				iterator.remove();
+			}
+		}
+		
+		if (activeGhosts.size() < numOpponents) {
+			Iterator<Ghost> iterator = ghostRepo.iterator();
+			
+			while (activeGhosts.size() < numOpponents) {
+				activeGhosts.add(iterator.next());
+				iterator.remove();
+			}
+		}		
 	}
 
-	public long getPowerupTime() {
-		if (gameMode == GameMode.NORMAL)
-			return 0;
-		else
-			return modeCounter;
-	}
-	
-	private void debug() {
-		for (Ghost g : ghosts)
-			System.out.println(String.format("p = %s    v = %s", g.getPosition().toString(), g.getSpeed().toString()));
-	}
 }

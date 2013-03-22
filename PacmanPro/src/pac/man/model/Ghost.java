@@ -15,13 +15,12 @@ public class Ghost extends Character {
 			Map<AnimationType, Integer> animationMapping) {
 		super(size, position, animationMapping);
 
-		// Defaults to nonrestrictive, aggresive movement algorithm.
+		// Defaults to non-restrictive, aggressive movement algorithm.
 		setMovementAlgorithm(new NonrestrictiveMovement());
 		setMovementStrategy(new RandomStrategy());
 	}
 
 	public void handleMove() {
-		// Do dat AI, boiiii!
 		MathVector direction = movementStrategy.computeDirection(getPosition(),
 				getSpeed());
 		MathVector speed = getMovementAlgorithm().computeSpeed(getPosition(),

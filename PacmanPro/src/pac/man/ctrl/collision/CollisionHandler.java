@@ -5,5 +5,5 @@ import pac.man.util.Dimension;
 import android.graphics.Rect;
 
 public interface CollisionHandler {
-	void handle(long dt, Dimension canvasDimension, Rect with, Character who);
+	void handle(long timeInterval, Dimension canvasDimension, Rect objectBoundary, Character character);
 }

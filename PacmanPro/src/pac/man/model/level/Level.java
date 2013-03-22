@@ -156,8 +156,8 @@ public class Level implements Drawable {
 	}
 
 	public synchronized void draw(Canvas canvas) {
-		for (Field f : collidableFields) {
-			f.draw(canvas);
+		for (Drawable d : collidableFields) {
+			d.draw(canvas);
 		}
 	}
 

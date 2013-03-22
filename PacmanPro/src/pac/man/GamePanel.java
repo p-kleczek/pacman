@@ -6,9 +6,9 @@ import java.util.Map;
 
 import pac.man.model.Character;
 import pac.man.model.Character.AnimationType;
-import pac.man.model.level.Level;
 import pac.man.model.GameState;
 import pac.man.model.Player;
+import pac.man.model.level.Level;
 import pac.man.util.Animation;
 import pac.man.util.Dimension;
 import pac.man.util.MathVector;
